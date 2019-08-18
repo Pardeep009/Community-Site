@@ -1,6 +1,7 @@
 
     // var parent-div = document.getElementById("community-lists")
   $(document).ready(function() {
+    console.log("sdjkkjdkjdjkdkj");
       var p = document.getElementById("objectId")
       p = p.textContent;
       //console.log(p);

@@ -24,7 +24,7 @@
     var obj = Object();
     obj.tagname = tagname.value;
     obj.tagdate = today;
-    obj.tagflag = 1;
+    obj.tagflag = "1";
     obj.tagcreator = document.getElementById('tagcreator').innerHTML;
     console.log(obj);
     var request = new XMLHttpRequest()

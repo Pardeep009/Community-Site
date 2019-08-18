@@ -1,6 +1,7 @@
 
   function showsidebar()
   {
+    console.log("sdjksdkjsdkjdskj");
     var element = document.getElementById("viewscreen");
     element.classList.toggle("toggle-pc");
 
@@ -39,8 +40,11 @@
       // {
       //     window.location = '/switchcommunityhome'
       // }
+      let word = 'Admin';
+      if($('p').html()=='admin')
+      word = 'User';
       $.confirm({
-        	title: 'Switch As User',
+          title: 'Switch As ' + word,
         	content: 'Do you really want switch state...',
         	draggable: true,
        		buttons: {
@@ -71,12 +75,19 @@
 
   function open_communities_page()
   {
+    console.log("here");
+    // return ;
     window.location = '/home'
   }
 
   function editpage()
   {
     window.location = '/editpage'
+  }
+
+  function aslieditpage()
+  {
+    window.location = '/editinfo'
   }
 
   function open_logout()

@@ -1,16 +1,11 @@
 
-  var data;
+  var data = [];
+  var start=0;
+  var end=3;
+  var total=0;
+  var total_data = [];
   $(document).ready(function() {
-    var request = new XMLHttpRequest()
-    request.open('GET','/freeCommunities');
-    request.send();
-    request.onload = function()
-    {
-      data = JSON.parse(request.responseText);
-      console.log(data);
-      for(var i in data)
-      addtoDOM(data[i]);
-    }
+    getCommunities()
   })
 
   function addtoDOM(obj)
@@ -55,12 +50,46 @@
     document.getElementById("community-lists").innerHTML=""
     var val=document.getElementById("searchCommunitybox").value;
     console.log(val)
-    for(j in data)
+    for(j=0;j<total;j++)
     {
-        if((data[j].communityname).includes(val))
+        if((total_data[j].communityname).includes(val))
         {
              console.log("klkl")
-            addtoDOM(data[j]);
+            addtoDOM(total_data[j]);
         }
     }
   }
+
+  function getCommunities()
+  {
+    let obj = {
+      start : start,
+      end : end,
+    }
+    console.log(obj);
+    let request = new XMLHttpRequest()
+    request.open('POST','/freeCommunities');
+    request.setRequestHeader('Content-Type','application/json')
+    request.send(JSON.stringify(obj));
+    request.onload = function()
+    {
+      data = JSON.parse(request.responseText);
+      console.log(data);
+      total+=data.length;
+      total_data = total_data.concat(data);
+      console.log(total_data);
+      console.log("total + "+total);
+      for(var i in data)
+      addtoDOM(data[i]);
+    }
+  }
+
+  $(window).scroll(function() {
+      if($(window).scrollTop() == $(document).height() - $(window).height()) {
+             // ajax call get data from server and append to the div
+             // console.log("dsddsj")
+             start+=3;
+             // end+=3;
+             getCommunities();
+      }
+  });

@@ -15,7 +15,7 @@
     app.use(express.static(path.join(__dirname,'public')));
     app.use(express.static(path.join(__dirname,'public/uploadimages')));
 
-    app.use(express.urlencoded({extended: true}));   // ensures that we can use nested objects now
+    app.use(express.urlencoded({extended: true}));
     app.use(express.json());
 
     app.use(session({
@@ -23,6 +23,15 @@
       resave: false,
        saveUnintialized: true,
     }))
+
+    app.use(function (req, res, next) {
+      // if(req.session.isLogin)
+      console.log("in middleware");
+      next()
+      // else {
+        // res.redirect('/');
+      // }
+    })
 
     var mongoose = require('mongoose');
     var schema = mongoose.Schema;
@@ -53,12 +62,14 @@
         interests: String,
         journey: String,
         expectations: String,
-        photoname: {type : String,default:"/dp.png"},
+        photoname: {type : String, default:"/dp.png"},
         githubid : String,
         switch: String,
-        req : [{ type: schema.Types.ObjectId, ref: 'communitys' }],
+        req : [{ type: schema.Types.ObjectId, ref: 'communitys' }],            // kis kis commuity ke liye request ki hui hai
         join : [{ type: schema.Types.ObjectId, ref: 'communitys' }],
         owned : [{ type: schema.Types.ObjectId, ref: 'communitys' }],
+        manager : [{ type: schema.Types.ObjectId, ref: 'communitys' }],           // kis kis community ka manager not ownner
+        invitations : [{ type: schema.Types.ObjectId, ref: 'communitys' }],     // kis kis community ki invitations ayi hui hai
     })
 
     var tagSchema = new mongoose.Schema({
@@ -80,24 +91,10 @@
         communityconfirm : { type : String , default : 'Not Active' },
         communityrequest : [{ type: schema.Types.ObjectId, ref: 'admins' }],
         communitymember : [{ type: schema.Types.ObjectId, ref: 'admins' }],
+        communitymanager : [{ type: schema.Types.ObjectId, ref: 'admins' }],
         invitations : [{ type: schema.Types.ObjectId, ref: 'admins' }],
         communitydiscussion : { type : Array , default : [] },
     })
-
-    // var cmSchema = new mongoose.Schema({
-    //   communityid : String,
-    //   ownerid : String,
-    //   reqedMembers : Array,
-    //   joinedMembers : Array,
-    // })
-    // var mcSchema = new mongoose.Schema({
-    //   memberid: String,
-    //   ownedCommunities: Array,
-    //   reqedCommunities: Array,
-    //   joinedCommunities: Array
-    // })
-    // var cm = mongoose.model('communityMembers',cmSchema);          /*member community Schema*/
-    // var mc = mongoose.model('memberCommunitys',mcSchema);
 
     var product = mongoose.model('admins', productSchema);
     var tag = mongoose.model('tags', tagSchema);
@@ -215,7 +212,7 @@
 
       app.get('/',function(req,res)
       {
-          res.redirect('login.html');
+          res.render('login');
       })
 
     app.post('/login',function (req,res)
@@ -237,7 +234,7 @@
                  }
                  else
                  {
-                 //console.log(data[0]);
+                 // console.log("----------------================="+data[0]);
                    if(data[0].state =="notactive")
                    {
                      res.send("0000");
@@ -246,22 +243,24 @@
                    {
                      req.session.isLogin = 1;
                      var obj = Object();
-                     obj.isLogin = 1;
-                     obj.username = data[0].username ;
-                     obj.password = data[0].password;
-                     obj.dob = data[0].dob;
-                     obj.city=data[0].city;
-                     obj.gender=data[0].gender;
-                     obj.phone=data[0].phone;
-                     obj.role=data[0].role;
-                     obj.name=data[0].name;
-                     obj.status=data[0].status;
-                     obj.state=data[0].state;
-                     obj._id=data[0]._id;
-                     obj.switch = data[0].switch;
-                     obj.photoname = data[0].photoname;
-                     console.log(obj);
+                     obj = data[0]
                      req.session.data = obj;
+                     // obj.isLogin = 1;
+                     // obj.username = data[0].username ;
+                     // obj.password = data[0].password;
+                     // obj.dob = data[0].dob;
+                     // obj.city=data[0].city;
+                     // obj.gender=data[0].gender;
+                     // obj.phone=data[0].phone;
+                     // obj.role=data[0].role;
+                     // obj.name=data[0].name;
+                     // obj.status=data[0].status;
+                     // obj.state=data[0].state;
+                     // obj._id=data[0]._id;
+                     // obj.switch = data[0].switch;
+                     // obj.photoname = data[0].photoname;
+                     // console.log(obj);
+                     // req.session.data = obj;
                      res.send(data)
                    }
             }
@@ -276,12 +275,12 @@
         })
     })
 
-    app.get('/notactive',function(req,res)
+    app.get('/notactive',logger,function(req,res)
     {
         res.render('notactive');
     })
 
-    app.get('/home',function(req,res)
+    app.get('/home',logger,function(req,res)
     {
         //console.log(req.session.data);
         if(req.session.data.status == 'pending')
@@ -310,7 +309,7 @@
         }
     })
 
-    app.get('/profile',function(req,res)
+    app.get('/profile',logger,function(req,res)
     {
         if(req.session.data.role=='admin')
         {
@@ -330,7 +329,7 @@
         }
     })
 
-    app.get('/editpage',function(req,res)
+    app.get('/editpage',logger,function(req,res)
     {
 
       if(req.session.data.switch=="admin")
@@ -340,7 +339,7 @@
         }
     })
 
-    app.get('/editinfo',function(req,res)
+    app.get('/editinfo',logger,function(req,res)
     {
       if(req.session.data.role=='admin')
       {
@@ -359,7 +358,7 @@
       }
     })
 
-    app.get('/adduser',function(req,res)
+    app.get('/adduser',logger,function(req,res)
     {
         res.render('adduser',{obj : req.session.data});
     })
@@ -435,7 +434,7 @@
         });
     }
 
-    app.get('/changepassword',function(req,res)
+    app.get('/changepassword',logger,function(req,res)
     {
       if(req.session.data.role=='admin')
       {
@@ -473,13 +472,13 @@
           }
     })
 
-    app.get('/userslist',function(req,res)
+    app.get('/userslist',logger,function(req,res)
     {
       console.log(req.body);
         res.render('userslist',{obj : req.session.data});
     })
 
-    app.get('/communitylist',function(req,res)
+    app.get('/communitylist',logger,logger,function(req,res)
     {
         res.render('communitylist',{ obj: req.session.data });
     })
@@ -668,6 +667,7 @@
 
           community.countDocuments(function(e,count){
             var start=parseInt(req.body.start);
+            console.log(start);
             var len=parseInt(req.body.length);
             var mrule=req.body.communitymembershiprule;
             var search=req.body.search.value;
@@ -721,7 +721,7 @@
     app.post('/tl',function(req,res)
     {
       // console.log(req);
-      var count;
+      let count;
 
       if(req.body.order[0].column==0)
       {
@@ -752,16 +752,16 @@
       function getdata(colname,sortorder)
       {
           tag.countDocuments(function(e,count){
-            var start=parseInt(req.body.start);
-            var len=parseInt(req.body.length);
-            // var role=req.body.role;
-            // var status=req.body.status;
-            var search=req.body.search.value;
-            var getcount=10;
-            console.log(req.body.search.value.length);
+            let start=parseInt(req.body.start);
+            let len=parseInt(req.body.length);
+            let search=req.body.search.value;
+            let getcount=10;
+            // console.log(req.body.search.value.length);
 
 
-          var findobj={};
+          var findobj = {
+             tagflag : "1",
+          };
             // console.log(role,status);
             // if(role!="all")
             //    { findobj.role=role;
@@ -782,7 +782,7 @@
             },{
                 "tagdate": { '$regex' : search, '$options' : 'i' }
             }]
-            else{
+            else {
                 delete findobj["$or"];
             }
 
@@ -799,8 +799,7 @@
                 res.send({"recordsTotal" : count,"recordsFiltered" :getcount,data})
               })
               .catch(err => {
-                console.error(err)
-              //  res.send(error)
+                console.error(err);
               })
           });
         }
@@ -825,6 +824,7 @@
     }).single('myImage');
 
     app.post('/upload',(req,res) => {
+      console.log("req body mein "+req.body);
       upload(req,res,(err)=>{
         if(err)
         {
@@ -883,7 +883,7 @@
       })
     })
 
-    app.get('/tagpanel',function(req,res)
+    app.get('/tagpanel',logger,function(req,res)
     {
       res.render('tagpanel',{obj : req.session.data})
     })
@@ -901,24 +901,37 @@
       })
     })
 
-    app.get('/showtaglist',function(req,res)
+    app.post('/deleteTag',function(req,res)
     {
-      res.render('showtaglist',{obj : req.session.data})
-    })
-
-    app.post('/deletetag',function(req,res)
-    {
-      tag.deleteOne({ "_id": req.body}, function(err,result)
+      tag.updateOne({ "_id" : req.body._id },{ $set : { tagflag : "0" } },function(error,result)
       {
-        if(err)
-        throw err;
-        else
-        {
-          console.log("deleted");
+        if(error)
+        throw error;
+        else {
+          console.log(result);
           res.end();
         }
       })
     })
+
+    app.get('/showtaglist',logger,function(req,res)
+    {
+      res.render('showtaglist',{obj : req.session.data})
+    })
+
+    // app.post('/deletetag',function(req,res)
+    // {
+    //   tag.deleteOne({ "_id": req.body}, function(err,result)
+    //   {
+    //     if(err)
+    //     throw err;
+    //     else
+    //     {
+    //       console.log("deleted");
+    //       res.end();
+    //     }
+    //   })
+    // })
 
     app.post('/edituserinfo',function(req,res)
     {
@@ -955,7 +968,7 @@
         })
     })
 
-    app.get('/changeswitch',function(req,res)
+    app.get('/changeswitch',logger,function(req,res)
     {
         req.session.data.switch = 'admin'
         product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
@@ -967,10 +980,12 @@
         })
     })
 
-    app.get('/switchcommunityhome',function(req,res)
+    app.get('/switchcommunityhome',logger,function(req,res)
     {
       // if(req.session.data.role!='communitybuilder')
       // {
+      if(req.session.data.switch == 'admin')
+      {
         req.session.data.switch = 'user'
         product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "user" } } ,function(error,result)
         {
@@ -982,12 +997,26 @@
               res.redirect('/community/communitypanel');
           }
         })
+      }
+      else {
+        req.session.data.switch = 'admin'
+        product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
+        {
+          if(error)
+          throw error;
+          else
+          {
+              // res.render('switchcommunityhome' , { obj: req.session.data })
+              res.redirect('/home');
+          }
+        })
+      }
     //   }
     // else
     // res.render('communitybuilder' , { obj: req.session.data })
     })
 
-    app.get('/switchcreatecommunity',function(req,res)
+    app.get('/community/switchcreatecommunity',logger,function(req,res)
     {
       if(req.session.data.role=='admin')
       res.render('switchcreatecommunity',{ obj : req.session.data })
@@ -998,63 +1027,46 @@
 
     app.post('/createcommunity',function(req,res)
     {
-       console.log(req.body);
-       if(req.body.myImage)
-       {
-         // console.log("photo haiiiiiiii");
-          // upload(req,res,(err)=>
-          // {
-          //   if(err)
-          //   throw err;
-          //   else {
-          //     req.body.communityimage = photoname;
-          //     console.log("photo   pdgi");
-          //       createcommunity(req)
-          //   }
-          // })
-         //  var photoname ;
-         //
-         //  var storage = multer.diskStorage({
-         //    destination : './public/uploadimages/',
-         //    filename : function(req, file, callback)
-         //    {
-         //      photoname=file.fieldname + '-' + Date.now() + '@' +path.extname(file.originalname)
-         //      console.log("hhhhhhhhhhhhhh");
-         //      callback(null,photoname);
-         //    }
-         //  })
-         //
-         //  var upload = multer({
-         //    storage : storage,
-         //    // limits : {
-         //    //   fileSize : 100000
-         //    // }
-         //  }).single('myImage');
-         //
-         //  upload(req,res,(err)=>
-         //  {
-         //    if(err)
-         //    throw err;
-         //    else {
-         //      req.body.communityimage = photoname;
-         //      console.log("photo   pdgi");
-         //        createcommunity(req)
-         //    }
-         //  })
-         createcommunity(req)
-       }
-       else {
-         createcommunity(req)
-       }
-       if(req.session.data == 'admin')
-       res.render('switchcreatecommunity',{ obj : req.session.data });
-       else {
-         res.render('communitycreate',{ obj : req.session.data });
-       }
+      if(!req.body.communityname)
+      {
+        // console.log("fghjkjhghjjkhjgh");
+        res.send("no dataa");
+      }
+      else {
+        console.log(req.body);
+        // res.render('switchcreatecommunity',{ obj : req.session.data });
+        if(req.body.myImage)
+        {
+          console.log("photo haiiiiiiii");
+           upload(req,res,(err)=>
+           {
+             if(err)
+             throw err;
+             else {
+               console.log(photoname);
+               req.body.communityimage = photoname;
+               console.log("photo   pdgi");
+                 createcommunity(req)
+             }
+           })
+          // createcommunity(req)
+        }
+        else {
+
+          // res.send("creating commuity");
+          // createcommunity(req)
+        }
+        // if(req.session.data == 'admin')
+        // res.render('switchcreatecommunity',{ obj : req.session.data });
+        // else {
+        //   res.render('communitycreate',{ obj : req.session.data });
+        // }
+      }
     })
 
     function createcommunity(req)
     {
+
         var cid;
         var obj = req.body;
         console.log(obj);
@@ -1109,9 +1121,9 @@
       return time;
     }
 
-    app.get('/ownedCommunities',function(req,res)
+    app.get('/ownedCommunities',logger,function(req,res)
     {
-        community.find( { $or : [{ communityownerid : req.session.data._id },{ communitymember : { $in : [req.session.data._id] } },{ communityrequest : { $in : [req.session.data._id] } }] } ).exec(function(error,result) {
+        community.find( { $or : [{ communityownerid : req.session.data._id },{ communitymember : { $in : [req.session.data._id] } },{ communitymanager : { $in : [req.session.data._id] } },{ communityrequest : { $in : [req.session.data._id] } }] } ).exec(function(error,result) {
          {
             if(error)
             throw error;
@@ -1120,7 +1132,7 @@
             }
           }
         })
-  })
+    })
 
     // comminstance.find({ $and: [{ ownerid : { $not : { $eq : req.session.data._id }}},{commjoin : {$nin : [req.session.data._id] }},{commasktojoin : {$nin : [req.session.data._id] }}] }).exec(function(error,result){
     //     if(error)
@@ -1142,17 +1154,51 @@
         })
     })
 
-    app.get('/freeCommunities',function(req,res)
+    app.post('/community/editcommunity/:pro',function(req,res)
     {
-         community.find( { $and : [{ communityownerid : { $not : { $eq : req.session.data._id } } },{ communitymember : { $nin : [req.session.data._id] } },{ communityrequest : { $nin : [req.session.data._id] } }] } ).exec(function(error,result) {
+      // console.log("req body mein "+req.body);
+      upload(req,res,(err)=>{
+        if(err)
+        {
+          throw err;
+        }
+        else
+        {
+          console.log(req.file);
+          console.log(photoname);
+          // console.log(req.session.data._id);
+
+          community.updateOne({ "_id" : req.params.pro }, { $set : { "communityimage" : photoname } },function(error,result)
+          {
+              if(error)
+              throw error;
+              else {
+                console.log("updated");
+                res.redirect('/community/editcommunity/'+req.params.pro+'');
+                // res.send("DONE");
+              }
+          })
+        }
+      })
+    })
+
+    app.post('/freeCommunities',function(req,res)
+    {
+      console.log(req.body);
+      let start = req.body.start;
+      let end = req.body.end;
+      // console.log("------------"+start,end);
+      let findobj = { $and : [{ communityownerid : { $not : { $eq : req.session.data._id } } },{ communitymember : { $nin : [req.session.data._id] } },{ communityrequest : { $nin : [req.session.data._id] } }] };
+      community.find( findobj ).skip(start).limit(end).exec(function(error,result) {
         {
           if(error)
           throw error;
           else {
+            console.log(result);
             res.send(result);
           }
         }
-    })
+      })
     })
 
     app.post('/djoin',function(req,res)
@@ -1211,63 +1257,11 @@
              })
            }
         })
-        // res.end();
-    })
-
-    app.get('/community/list',function(req,res)
-    {
-        // console.log("i =dssssssssssssc");
-        if(req.session.data.role=='admin')
-        {
-          res.render('switchcommunitysearch',{ obj : req.session.data })
-        }
-        else {
-          res.render('buildercommunitysearch',{ obj : req.session.data });
-        }
-    })
-
-    app.get('/community/communityprofile/:pro',function(req,res)
-    {
-        var id = req.params.pro;
-        console.log(id);
-        // req.session.data.communityid = id;
-        // res.render('communityprofile',{ obj : req.session.data });
-        community.findOne( { "_id" : id } , function(error,result)
-        {
-            if(error)
-            throw error;
-            else {
-              // console.log(result);
-              if(req.session.data.role == 'admin')
-              {
-                // console.log("hye");
-                  res.render('switchcommunityprofile',{ obj: req.session.data, commobj: result });
-              }
-              else {
-                // console.log("h");
-                  res.render('communityprofile',{ obj: req.session.data, commobj: result });
-              }
-            }
-        })
-    })
-
-    app.get('/community/manageCommunity/:pro',function(req,res)
-    {
-      var id=req.params.pro;
-        community.findOne( { "_id" : id },function(err,result)
-        {
-            if(err)
-            throw err;
-            else {
-              res.render('buildermanageCommunity',{ obj : req.session.data, commobj : result });
-            }
-        })
-        // res.render('buildermanageCommunity',{ obj : req.session.data });
     })
 
     app.post('/getMembers',function(req,res)
     {
-        var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communityrequest' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'invitations' , select : { 'name' : 1 , 'photoname' : 1 } } ];
+        var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communityrequest' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'invitations' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } } ];
         community.findOne({ "_id" : req.body._id }).populate( query ).exec(function (err, person) {
         if (err) throw err;
         // console.log(person);
@@ -1275,12 +1269,12 @@
       });
     });
 
-    app.get('/community/communitypanel',function(req,res)
+    app.get('/community/communitypanel',logger,function(req,res)
     {
-        console.log("/community/communitypanel");
+        // console.log("/community/communitypanel");
         if(req.session.data.role=='admin')
         {
-          res.render('switchcommunity',{ obj : req.session.data });
+          res.render('switchcommunityhome',{ obj : req.session.data });
         }
         else if(req.session.data.role=='communitybuilder')
         {
@@ -1332,7 +1326,133 @@
       })
     })
 
-    app.get('/community/discussions/:pro',function(req,res)
+    app.post('/removeUser',function(req,res)
+    {
+      community.updateOne( { "_id" : req.body.commid } , { $pull : { communitymember : { $in : [req.body.userid] } } , $pull : { communitymanager : { $in : [req.body.userid] } } },function(err,result)
+      {
+          if(err)
+          throw err;
+          else {
+            product.updateOne( { "_id" : req.body.userid } , { $pull : { join : { $in : [req.body.commid] } } ,  $pull : { manager : { $in : [req.body.commid] } } },function(err,result)
+            {
+              if(err)
+              throw err;
+              else {
+                res.send("DONE");
+              }
+            })
+          }
+      })
+    })
+
+    app.post('/promoteUser',function(req,res)
+    {
+      community.updateOne( { "_id" : req.body.commid } , {  $push : { communitymanager : req.body.userid } , $pull : { communitymember : { $in : [req.body.userid] } }  },function(err,result)
+      {
+          if(err)
+          throw err;
+          else {
+            product.updateOne( { "_id" : req.body.userid } , {  $push : { manager : req.body.commid } , $pull : { join : { $in : [req.body.commid] } }  },function(err,result)
+            {
+              if(err)
+              throw err;
+              else {
+                res.send("DONE");
+              }
+            })
+          }
+      })
+    })
+
+    app.post('/getObj',function(req,res)
+    {
+      res.send(req.session.data);
+    })
+
+    app.post('/demoteUser',function(req,res)
+    {
+      community.updateOne( { "_id" : req.body.commid } , {  $push : { communitymember : req.body.userid } , $pull : { communitymanager : { $in : [req.body.userid] } }  },function(err,result)
+      {
+          if(err)
+          throw err;
+          else {
+            product.updateOne( { "_id" : req.body.userid } , {  $push : { join : req.body.commid } , $pull : { manager : { $in : [req.body.commid] } }  },function(err,result)
+            {
+              if(err)
+              throw err;
+              else {
+                res.send("DONE");
+              }
+            })
+          }
+      })
+    })
+
+    app.get('/community/list',logger,function(req,res)
+    {
+        // console.log("i =dssssssssssssc");
+        if(req.session.data.role=='admin')
+        {
+          res.render('switchcommunitysearch',{ obj : req.session.data })
+        }
+        else {
+          res.render('buildercommunitysearch',{ obj : req.session.data });
+        }
+    })
+
+    app.get('/community/communityprofile/:pro',logger,function(req,res)
+    {
+        var id = req.params.pro;
+        console.log(id);
+        var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } } ];
+        community.findOne({ "_id" : id }).populate( query ).exec(function (err, person) {
+            if (err) throw err;
+            console.log(person);
+            res.render('switchcommunityprofile',{ obj: req.session.data, commobj: person });
+            // res.send(person);
+        });
+        // req.session.data.communityid = id;
+        // res.render('communityprofile',{ obj : req.session.data });
+        // community.findOne( { "_id" : id } , function(error,result)
+        // {
+        //     if(error)
+        //     throw error;
+        //     else {
+        //       // console.log(result);
+        //       if(req.session.data.role == 'admin')
+        //       {
+        //         // console.log("hye");
+        //           res.render('switchcommunityprofile',{ obj: req.session.data, commobj: result });
+        //       }
+        //       else {
+        //         // console.log("h");
+        //           res.render('communityprofile',{ obj: req.session.data, commobj: result });
+        //       }
+        //     }
+        // })
+    })
+
+    app.get('/community/manageCommunity/:pro',logger,function(req,res)
+    {
+      var id=req.params.pro;
+        community.findOne( { "_id" : id },function(err,result)
+        {
+            if(err)
+            throw err;
+            else {
+              if(req.session.data.role == 'admin')
+              {
+                res.render('switchmanageCommunity',{ obj : req.session.data, commobj : result });
+              }
+              else {
+                  res.render('buildermanageCommunity',{ obj : req.session.data, commobj : result });
+              }
+            }
+        })
+        // res.render('buildermanageCommunity',{ obj : req.session.data });
+    })
+
+    app.get('/community/discussions/:pro',logger,function(req,res)
     {
         var id = req.params.pro;
         community.findOne( { "_id" : id  },function(err,result)
@@ -1340,10 +1460,62 @@
           if(err)
           throw err;
           else {
-              res.render('builderdiscussions',{ obj : req.session.data, commobj : result });
+            if(req.session.data.role == 'admin')
+            {
+              res.render('switchcommunitydiscussions',{ obj : req.session.data, commobj : result });
+            }
+            else {
+                res.render('builderdiscussions',{ obj : req.session.data, commobj : result });
+            }
           }
         })
     })
+
+    app.get('/community/communitymembers/:pro',logger,function(req,res)
+    {
+      community.findOne( { "_id" : req.params.pro  },function(err,result)
+      {
+        if(err)
+        throw err;
+        else {
+          if(req.session.data.role == 'admin')
+          {
+            res.render('switchcommunitymembers',{ obj : req.session.data, commobj : result });
+          }
+          else {
+              res.render('buildercommunitymembers',{ obj : req.session.data, commobj : result });
+          }
+        }
+      })
+    })
+
+    app.get('/community/editcommunity/:pro',logger,function(req,res)
+    {
+      community.findOne( { "_id" : req.params.pro  },function(err,result)
+      {
+        if(err)
+        throw err;
+        else {
+          if(req.session.data.role == 'admin')
+          {
+            res.render('switcheditCommunity',{ obj : req.session.data, commobj : result });
+          }
+          else {
+              res.render('buildereditCommunity',{ obj : req.session.data, commobj : result });
+          }
+        }
+      })
+    })
+
+    app.post('/get',function(req,res)
+    {
+        var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } }];
+        community.findOne({ "_id" : req.body._id }).populate( query ).exec(function (err, person) {
+        if (err) throw err;
+        // console.log(person);
+        res.send(person);
+      });
+    });
 
     app.post('/createDiscussion/:pro',function(req,res)
     {
@@ -1387,7 +1559,7 @@
       })
     })
 
-    app.get('/viewprofile/:pro',function(req,res)
+    app.get('/viewprofile/:pro',logger,function(req,res)
     {
       var id = req.params.pro;
       product.findOne({ "_id" : id },function(error,result)
@@ -1395,7 +1567,13 @@
           if(error)
           throw error;
           else {
-            res.render('builder_discuss_owner_profile',{ obj : req.session.data , commo : result });
+            if(req.session.data.role=='admin')
+            {
+              res.render('switch_view_profile',{ obj : req.session.data , commo : result });
+            }
+            else {
+              res.render('builder_view_profile',{ obj : req.session.data , commo : result });
+            }
           }
       })
     })
@@ -1412,3 +1590,15 @@
       res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
       res.render('login');
     })
+
+    function logger(req,res,next)
+    {
+      // console.log("------------logger chla dekho---------------");
+      if(req.session.isLogin)
+      {
+        next();
+      }
+      else {
+          res.redirect('/');
+      }
+    }

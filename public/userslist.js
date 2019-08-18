@@ -103,11 +103,12 @@
           console.log(obj);
           updateuser(obj,function()
           {
-               $('#'+_id).children().eq(0).html(obj.username);
-               $('#'+_id).children().eq(1).html(obj.phone);
-               $('#'+_id).children().eq(2).html(obj.city);
-               $('#'+_id).children().eq(3).html(obj.status);
-               $('#'+_id).children().eq(4).html(obj.role);
+            table.ajax.reload(null, false);
+               // $('#'+_id).children().eq(0).html(obj.username);
+               // $('#'+_id).children().eq(1).html(obj.phone);
+               // $('#'+_id).children().eq(2).html(obj.city);
+               // $('#'+_id).children().eq(3).html(obj.status);
+               // $('#'+_id).children().eq(4).html(obj.role);
               // console.log(event.target);
           })
      })

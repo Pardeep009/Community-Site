@@ -1,13 +1,8 @@
 
   var table;
    function getdata() {
-     // document.getElementById("users-table").innerHTML=""
-     // console.log(role);
-     // console.log(status);
-     // status="confirmed"
-     console.log("hello");
     $.fn.dataTable.ext.errMode = 'none';
-    table = $('#community-table').DataTable({        // users-table   table ki id hai naa ki tbody ki
+    table = $('#community-table').DataTable({
       "processing" : true,
       "serverSide" : true,
       "rowId" : "_id",
@@ -65,7 +60,8 @@
           "targets" : 5,
 
           "render" : function (data,type,row,meta) {
-            data = '<center><a class="btn btn-sm editbtn actionbtns" data-target="#updateCommunity" data-toggle="modal" onclick=editCommunity("'+row.communitycreatedate+'","'+row.communityowner+'","' + encodeURIComponent(row.communityname) + '","' + encodeURIComponent(row.communityconfirm) + '","'+row._id+'") style="margin-top:35px;background-color: #2D312C;color: #fff"><span class="fa fa-edit"></span></a><a class="btn btn-sm infobtn actionbtns" data-toggle="modal" data-target="#CommunityInfo"  onlcick=showComminfo("' + encodeURIComponent(row.communityname) + '", "' + row.communityimage + '" ,"' + encodeURIComponent(row.communitydescription) + '") style="margin-top:35px;background-color: #2D312C;color: #fff"><span class="fa fa-info"></span></a></center>'
+            // console.log(data);
+            data = '<center><a class="btn btn-sm editbtn actionbtns" data-target="#updateCommunity" data-toggle="modal" onclick=editCommunity("'+row.communitycreatedate+'","'+encodeURIComponent(row.communityowner)+'","' + encodeURIComponent(row.communityname) + '","' + encodeURIComponent(row.communityconfirm) + '","'+row._id+'") style="margin-top:35px;background-color: #2D312C;color: #fff"><span class="fa fa-edit"></span></a><a class="btn btn-sm infobtn actionbtns" onclick=showComminfo("'+ encodeURIComponent(row.communityname)+'","'+encodeURIComponent(row.communityimage)+'","'+encodeURIComponent(row.communitydescription)+'") data-toggle="modal" data-target="#CommunityInfo" style="margin-top:35px; background-color: #2D312C; color: #fff"><span class="fa fa-info"></span></a></center>'
             return data;
           }
         }],
@@ -75,7 +71,8 @@
 	    table.ajax.reload(null, false);
   	});
 
-    $('#refresh').on('change', function () {
+    $('#refresh').on('click', function () {
+      // console.log("sdkj");
 	    table.ajax.reload(null, false);
   	});
 
@@ -90,6 +87,8 @@
   {
       commn = decodeURIComponent(commn)
       comms = decodeURIComponent(comms)
+      commo = decodeURIComponent(commo)
+      console.log(commn,comms,commo);
       $('#CommunityNamePop').html("Update " + commn);
       $('#CommunityAdminPop').html("Created by " + commo + "," + obj);
       $('#CommuityName').val(commn);
@@ -99,6 +98,7 @@
         obj._id = _id;
         obj.communityname = $('#CommuityName').val();
         obj.communityconfirm = $('#communityStatus').val();
+        console.log(obj);
         var request = new XMLHttpRequest()
         request.open('POST','/updateCommunity')
         request.setRequestHeader("Content-Type","application/json");
@@ -111,11 +111,14 @@
       });
   }
 
-  function showComminfo(commn,i,commd)
+  function showComminfo(commn,image,commd)
   {
-    console.log("32");
-    console.log("644343");
+    // console.log("sdhgcdsj");
     commn = decodeURIComponent(commn)
     commd = decodeURIComponent(commd)
-    // $('#CommunityProfilePic').attr("src",image);
+    image = decodeURIComponent(image)
+    console.log(commd,commn,image);
+    $('#CommunityProfilePic').attr("src",image);
+    $('#CommunityInfoPop').html('Commuity '+commn);
+    $('#communityDesc').html(commd);
   }

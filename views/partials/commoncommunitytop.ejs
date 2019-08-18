@@ -15,7 +15,7 @@
         </div>
     </center>
     <center>
-        <a>
+        <a href="/community/communityprofile/<%= commobj._id %>">
             <img src="<%= commobj.communityimage %>" id="headerCommImage1" >
         </a>
     </center>
@@ -23,10 +23,10 @@
 
 <div  class="container" id="communityHeaderOfLap">
     <div class="col-sm-2 col-xs-12"  id="lapDiv1">
-        <a><img src="<%= commobj.communityimage %>" id="headerCommImage2"></a>
+        <a href="/community/communityprofile/<%= commobj._id %>"><img src="<%= commobj.communityimage %>" id="headerCommImage2"></a>
     </div>
     <div class="col-sm-8" id="lapDiv2">
-      <a><%= commobj.communityname %></a>
+      <a href="/community/communityprofile/<%= commobj._id %>" ><%= commobj.communityname %></a>
     </div>
     <div class="col-sm-2 col-xs-12 center-mobile" style="padding-top:10px;float:right">
         <div class="dropdown">
@@ -35,7 +35,7 @@
             </button>
             <ul class="dropdown-menu custom-commuity-dropdown dropdown-menu-right" style="margin-top:40px">
                 <li>
-                    <a href="/community/discussion/5cbf18d7f54a481812074358" class="community-profile-option-btn">
+                    <a href="/community/discussions/<%=commobj._id%>" class="community-profile-option-btn">
                       Discussions
                     </a>
                 </li>
@@ -43,20 +43,20 @@
 
 
                 <li>
-                    <a href="/community/managecommunity/5cbf18d7f54a481812074358" class="community-profile-option-btn">
+                    <a href="/community/managecommunity/<%=commobj._id%>" class="community-profile-option-btn">
                       Manage Community
                     </a>
                 </li>
 
 
                 <li>
-                    <a href="/community/communityprofile/5cbf18d7f54a481812074358" class="community-profile-option-btn">
+                    <a href="/community/communityprofile/<%=commobj._id%>" class="community-profile-option-btn">
                       Community Profile
                     </a>
                 </li>
 
                 <li>
-                    <a href="/community/communitymembers/5cbf18d7f54a481812074358" class="community-profile-option-btn">
+                    <a href="/community/communitymembers/<%=commobj._id%>" class="community-profile-option-btn">
                       Community Members
                     </a>
                 </li>
