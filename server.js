@@ -37,7 +37,7 @@
     var schema = mongoose.Schema;
     var admindb = 'mongodb://localhost/cq';
 
-     mongoose.connect(admindb);
+    mongoose.connect(admindb);
 
     mongoose.connection.on('error',(err) => {
       console.log('DB connection Error');
@@ -303,8 +303,11 @@
               // console.log("hye---------------");
               res.redirect('/community/communitypanel');
             }
-            else {
+            else if(req.session.data.role=='user') {
               res.render('userprofile',{obj : req.session.data});
+            }
+            else {
+              res.send("No Page For U");
             }
         }
     })
@@ -325,7 +328,7 @@
           res.render('buildereditpage',{ obj : req.session.data })
         }
         else {
-
+          res.render('userprofile',{ obj : req.session.data })
         }
     })
 
@@ -601,7 +604,7 @@
           getcount=coun;
         }).catch(err => {
           console.error(err)
-          res.send(error)
+          res.send(error);
         })
 
           product.find(findobj).skip(start).limit(len).sort({[colname] : sortorder})
@@ -692,7 +695,7 @@
             }
             ,{
                 "communityowner":  { '$regex' : search, '$options' : 'i' }
-            }
+            },
             ,{
                 "communitycreatedate": { '$regex' : search, '$options' : 'i' }
             }]
@@ -1051,16 +1054,16 @@
            })
           // createcommunity(req)
         }
-        else {
-
+        else 
+        {
           // res.send("creating commuity");
-          // createcommunity(req)
+          createcommunity(req)
+          if(req.session.data == 'admin')
+          res.render('switchcreatecommunity',{ obj : req.session.data });
+          else {
+            res.render('communitycreate',{ obj : req.session.data });
+          }
         }
-        // if(req.session.data == 'admin')
-        // res.render('switchcreatecommunity',{ obj : req.session.data });
-        // else {
-        //   res.render('communitycreate',{ obj : req.session.data });
-        // }
       }
     })
 
@@ -1281,7 +1284,7 @@
           res.render('buildercommunity',{ obj : req.session.data });
         }
         else {
-          res.render('',{ obj : req.session.data });
+          res.render('usercommunity',{ obj : req.session.data });
         }
         res.end();
     })
