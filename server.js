@@ -387,13 +387,13 @@
                 var transporter = nodemailer.createTransport({
                   service: 'gmail',
                   auth: {
-                    user: 'pardeepbhatt5254@gmail.com',
-                    pass: 'tatabyehm009'
+                    user: 'yourmail@gmail.com',
+                    pass: 'yourpassword'
                   }
                 });
 
                 var mailOptions = {
-                  from: 'pardeepbhatt5254@gmail.com',
+                  from: 'yourmail@gmail.com',
                   to: req.body.username,
                   subject: 'Welcome To CQ',
                   text: "Your Username is: " + req.body.username + "\n" + " Password is: " + req.body.password
