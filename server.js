@@ -8,6 +8,7 @@
     var multer = require('multer');
     var passport = require('passport')
     var GitHubStrategy = require('passport-github').Strategy;
+    // let communityRoutes = require('./routes/community.js');
 
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
@@ -26,10 +27,12 @@
 
     app.use(function (req, res, next) {
       // if(req.session.isLogin)
-      console.log("in middleware");
-      next()
+      // {
+        console.log("1");
+        next();
+      // }
       // else {
-        // res.redirect('/');
+      //   res.redirect('/');
       // }
     })
 
@@ -104,6 +107,8 @@
 
     app.use(passport.initialize());
     app.use(passport.session());
+
+    app.use('/community',require('./Community/community.js'));
 
     passport.serializeUser(function(user,done){
         done(null,user);
@@ -292,7 +297,7 @@
             if(req.session.data.role=='admin')
             {
                if(req.session.data.switch=='user') {
-                 res.redirect('/community/communitypanel');
+                res.redirect('/community/communitypanel');
                }
                else {
                 res.render('profile',{obj : req.session.data});
@@ -361,7 +366,7 @@
       }
     })
 
-    app.get('/adduser',logger,function(req,res)
+    app.get('/adduser',logger,logger2,function(req,res)
     {
         res.render('adduser',{obj : req.session.data});
     })
@@ -475,13 +480,13 @@
           }
     })
 
-    app.get('/userslist',logger,function(req,res)
+    app.get('/userslist',logger,logger2,function(req,res)
     {
       console.log(req.body);
         res.render('userslist',{obj : req.session.data});
     })
 
-    app.get('/communitylist',logger,logger,function(req,res)
+    app.get('/communitylist',logger,logger2,function(req,res)
     {
         res.render('communitylist',{ obj: req.session.data });
     })
@@ -886,7 +891,7 @@
       })
     })
 
-    app.get('/tagpanel',logger,function(req,res)
+    app.get('/tagpanel',logger,logger2,function(req,res)
     {
       res.render('tagpanel',{obj : req.session.data})
     })
@@ -917,7 +922,7 @@
       })
     })
 
-    app.get('/showtaglist',logger,function(req,res)
+    app.get('/showtaglist',logger,logger2,function(req,res)
     {
       res.render('showtaglist',{obj : req.session.data})
     })
@@ -971,7 +976,7 @@
         })
     })
 
-    app.get('/changeswitch',logger,function(req,res)
+    app.get('/changeswitch',logger,logger2,function(req,res)
     {
         req.session.data.switch = 'admin'
         product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
@@ -1019,14 +1024,7 @@
     // res.render('communitybuilder' , { obj: req.session.data })
     })
 
-    app.get('/community/switchcreatecommunity',logger,function(req,res)
-    {
-      if(req.session.data.role=='admin')
-      res.render('switchcreatecommunity',{ obj : req.session.data })
-      else {
-        res.render('communitycreate',{ obj:req.session.data });
-      }
-    })
+    
 
     app.post('/createcommunity',function(req,res)
     {
@@ -1101,7 +1099,7 @@
 
     function getMonths(monthno)
     {
-      var month=["Jan","Feb","Mar","Apr","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      var month=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       return month[monthno];
     }
 
@@ -1124,7 +1122,7 @@
       return time;
     }
 
-    app.get('/ownedCommunities',logger,function(req,res)
+    app.post('/ownedCommunities',logger,function(req,res)
     {
         community.find( { $or : [{ communityownerid : req.session.data._id },{ communitymember : { $in : [req.session.data._id] } },{ communitymanager : { $in : [req.session.data._id] } },{ communityrequest : { $in : [req.session.data._id] } }] } ).exec(function(error,result) {
          {
@@ -1272,23 +1270,6 @@
       });
     });
 
-    app.get('/community/communitypanel',logger,function(req,res)
-    {
-        // console.log("/community/communitypanel");
-        if(req.session.data.role=='admin')
-        {
-          res.render('switchcommunityhome',{ obj : req.session.data });
-        }
-        else if(req.session.data.role=='communitybuilder')
-        {
-          res.render('buildercommunity',{ obj : req.session.data });
-        }
-        else {
-          res.render('usercommunity',{ obj : req.session.data });
-        }
-        res.end();
-    })
-
     app.post('/acceptRequest',function(req,res)
     {
       console.log(req.body);
@@ -1391,125 +1372,6 @@
       })
     })
 
-    app.get('/community/list',logger,function(req,res)
-    {
-        // console.log("i =dssssssssssssc");
-        if(req.session.data.role=='admin')
-        {
-          res.render('switchcommunitysearch',{ obj : req.session.data })
-        }
-        else {
-          res.render('buildercommunitysearch',{ obj : req.session.data });
-        }
-    })
-
-    app.get('/community/communityprofile/:pro',logger,function(req,res)
-    {
-        var id = req.params.pro;
-        console.log(id);
-        var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } } ];
-        community.findOne({ "_id" : id }).populate( query ).exec(function (err, person) {
-            if (err) throw err;
-            console.log(person);
-            res.render('switchcommunityprofile',{ obj: req.session.data, commobj: person });
-            // res.send(person);
-        });
-        // req.session.data.communityid = id;
-        // res.render('communityprofile',{ obj : req.session.data });
-        // community.findOne( { "_id" : id } , function(error,result)
-        // {
-        //     if(error)
-        //     throw error;
-        //     else {
-        //       // console.log(result);
-        //       if(req.session.data.role == 'admin')
-        //       {
-        //         // console.log("hye");
-        //           res.render('switchcommunityprofile',{ obj: req.session.data, commobj: result });
-        //       }
-        //       else {
-        //         // console.log("h");
-        //           res.render('communityprofile',{ obj: req.session.data, commobj: result });
-        //       }
-        //     }
-        // })
-    })
-
-    app.get('/community/manageCommunity/:pro',logger,function(req,res)
-    {
-      var id=req.params.pro;
-        community.findOne( { "_id" : id },function(err,result)
-        {
-            if(err)
-            throw err;
-            else {
-              if(req.session.data.role == 'admin')
-              {
-                res.render('switchmanageCommunity',{ obj : req.session.data, commobj : result });
-              }
-              else {
-                  res.render('buildermanageCommunity',{ obj : req.session.data, commobj : result });
-              }
-            }
-        })
-        // res.render('buildermanageCommunity',{ obj : req.session.data });
-    })
-
-    app.get('/community/discussions/:pro',logger,function(req,res)
-    {
-        var id = req.params.pro;
-        community.findOne( { "_id" : id  },function(err,result)
-        {
-          if(err)
-          throw err;
-          else {
-            if(req.session.data.role == 'admin')
-            {
-              res.render('switchcommunitydiscussions',{ obj : req.session.data, commobj : result });
-            }
-            else {
-                res.render('builderdiscussions',{ obj : req.session.data, commobj : result });
-            }
-          }
-        })
-    })
-
-    app.get('/community/communitymembers/:pro',logger,function(req,res)
-    {
-      community.findOne( { "_id" : req.params.pro  },function(err,result)
-      {
-        if(err)
-        throw err;
-        else {
-          if(req.session.data.role == 'admin')
-          {
-            res.render('switchcommunitymembers',{ obj : req.session.data, commobj : result });
-          }
-          else {
-              res.render('buildercommunitymembers',{ obj : req.session.data, commobj : result });
-          }
-        }
-      })
-    })
-
-    app.get('/community/editcommunity/:pro',logger,function(req,res)
-    {
-      community.findOne( { "_id" : req.params.pro  },function(err,result)
-      {
-        if(err)
-        throw err;
-        else {
-          if(req.session.data.role == 'admin')
-          {
-            res.render('switcheditCommunity',{ obj : req.session.data, commobj : result });
-          }
-          else {
-              res.render('buildereditCommunity',{ obj : req.session.data, commobj : result });
-          }
-        }
-      })
-    })
-
     app.post('/get',function(req,res)
     {
         var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } }];
@@ -1605,3 +1467,31 @@
           res.redirect('/');
       }
     }
+
+    function logger2(req,res,next)
+    {
+      if(req.session.data.role == 'admin')
+      {
+        next();
+      }
+      else {
+        res.redirect('/');
+      }
+    }
+/*
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/

@@ -6,7 +6,7 @@
       p = p.textContent;
       //console.log(p);
       var request1 = new XMLHttpRequest()
-      request1.open('GET','/ownedCommunities');
+      request1.open('POST','/ownedCommunities');
       request1.send();
       request1.onload = function()
       {
