@@ -46,5 +46,5 @@
 
   function opentaglist()
   {
-    window.location = '/showtaglist'
+    window.location = '/admin/showtaglist'
   }

@@ -25,5 +25,15 @@
            $("#communitydescription").trumbowyg();
            console.log("jhhhhhhhhhhh");
         })
+
+        document.getElementById('imgpath').onclick=function()
+        {
+          document.getElementById('imgBtn').click();
+        }
+
+        document.getElementById('imgBtn').onchange=function()
+        {
+          document.getElementById('imgpath').innerHTML=document.getElementById('imgBtn').files[0].name;
+        }
       </script>
       </html>

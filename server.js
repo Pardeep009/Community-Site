@@ -8,7 +8,6 @@
     var multer = require('multer');
     var passport = require('passport')
     var GitHubStrategy = require('passport-github').Strategy;
-    // let communityRoutes = require('./routes/community.js');
 
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
@@ -24,17 +23,6 @@
       resave: false,
        saveUnintialized: true,
     }))
-
-    app.use(function (req, res, next) {
-      // if(req.session.isLogin)
-      // {
-        console.log("1");
-        next();
-      // }
-      // else {
-      //   res.redirect('/');
-      // }
-    })
 
     var mongoose = require('mongoose');
     var schema = mongoose.Schema;
@@ -103,12 +91,20 @@
     var tag = mongoose.model('tags', tagSchema);
     var community = mongoose.model('communitys',communitySchema);
 
+    app.use('/community',require('./Community/community.js'));
+
+    app.use('/admin',require('./Admin/admin.js'));
+
+    // app.use('/',function(req,res,next)
+    // {
+    //   console.log("helllooooo");
+    //     next();
+    // })
+
     var GitHubStrategy = require('passport-github').Strategy;
 
     app.use(passport.initialize());
     app.use(passport.session());
-
-    app.use('/community',require('./Community/community.js'));
 
     passport.serializeUser(function(user,done){
         done(null,user);
@@ -215,10 +211,79 @@
           })
       })
 
-      app.get('/',function(req,res)
+    var photoname ;
+
+    var storage = multer.diskStorage({
+      destination : './public/uploadimages/',
+      filename : function(req, file, callback)
       {
-          res.render('login');
-      })
+        photoname='/' + file.fieldname + '-' + Date.now() + '@' +path.extname(file.originalname)
+        callback(null,photoname);
+      }
+    })
+
+    var upload = multer({
+      storage : storage,
+      // limits : {
+      //   fileSize : 100000
+      // }
+    }).single('myImage');
+
+    function getMonths(monthno)
+    {
+      var month=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return month[monthno];
+    }
+
+    function getTime()
+    {
+      var time = new Date()
+      var min = time.getMinutes();
+      var hrs = time.getHours();
+      var format ;
+      if(hrs>12)
+      {
+        hrs = 24-hrs;
+        format = 'PM';
+      }
+      else {
+        format = 'AM';
+      }
+      time = hrs + ':' + min + ' ' + format ;
+      console.log(time);
+      return time;
+    }
+
+    function sendmail(obj)
+    {
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'yourmail@gmail.com',
+            pass: 'yourmailpassword'
+          }
+        });
+
+        var mailOptions = {
+          from: 'yourmail@gmail.com',
+          to: obj.username,
+          subject: obj.subject,
+          html: obj.text
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+          } else {
+            console.log('Email sent: ' + info.res);
+          }
+        });
+    }
+
+    app.get('/',function(req,res)
+    {
+        res.render('login');
+    })
 
     app.post('/login',function (req,res)
     {
@@ -231,7 +296,6 @@
           {
             if(data.length>0)
             {
-
                  if(req.session.isLogin)
                  {
                    // console.log("Thankyou");
@@ -366,9 +430,23 @@
       }
     })
 
-    app.get('/adduser',logger,logger2,function(req,res)
+    app.get('/viewprofile/:pro',logger,function(req,res)
     {
-        res.render('adduser',{obj : req.session.data});
+      var id = req.params.pro;
+      product.findOne({ "_id" : id },function(error,result)
+      {
+          if(error)
+          throw error;
+          else {
+            if(req.session.data.role=='admin')
+            {
+              res.render('switch_view_profile',{ obj : req.session.data , commo : result });
+            }
+            else {
+              res.render('builder_view_profile',{ obj : req.session.data , commo : result });
+            }
+          }
+      })
     })
 
     app.post('/adduser',function(req,res)
@@ -416,32 +494,6 @@
         res.render('profile',{obj : req.session.data});
       })
 
-    function sendmail(obj)
-    {
-        var transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'pardeepbhatt5254@gmail.com',
-            pass: 'tatabyehm009'
-          }
-        });
-
-        var mailOptions = {
-          from: 'pardeepbhatt5254@gmail.com',
-          to: obj.username,
-          subject: obj.subject,
-          html: obj.text
-        };
-
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log(error);
-          } else {
-            console.log('Email sent: ' + info.res);
-          }
-        });
-    }
-
     app.get('/changepassword',logger,function(req,res)
     {
       if(req.session.data.role=='admin')
@@ -480,39 +532,12 @@
           }
     })
 
-    app.get('/userslist',logger,logger2,function(req,res)
-    {
-      console.log(req.body);
-        res.render('userslist',{obj : req.session.data});
-    })
-
-    app.get('/communitylist',logger,logger2,function(req,res)
-    {
-        res.render('communitylist',{ obj: req.session.data });
-    })
-
     app.post('/sendmail',function(req,res)
     {
       console.log(req.body);
       sendmail(req.body);
       res.end();
     })
-
-    // app.post('/ul' , function(req, res) {
-    //   product.countDocuments(function(e,count){
-    //     console.log(req.body);
-    //   var start=parseInt(req.body.start);
-    //   var len=parseInt(req.body.length);
-    //
-    //   product.find({}).skip(start).limit(len)
-    //   .then(data=> {
-    //     res.send({"recordsTotal": count, "recordsFiltered" : count, data})
-    //    })
-    //    .catch(err => {
-    //     res.send(err)
-    //    })
-    //  });
-// write one above
 
     app.post('/ul',function (req, res) {
     // console.log(req.body);
@@ -813,24 +838,6 @@
         }
     })
 
-    var photoname ;
-
-    var storage = multer.diskStorage({
-      destination : './public/uploadimages/',
-      filename : function(req, file, callback)
-      {
-        photoname='/' + file.fieldname + '-' + Date.now() + '@' +path.extname(file.originalname)
-        callback(null,photoname);
-      }
-    })
-
-    var upload = multer({
-      storage : storage,
-      // limits : {
-      //   fileSize : 100000
-      // }
-    }).single('myImage');
-
     app.post('/upload',(req,res) => {
       console.log("req body mein "+req.body);
       upload(req,res,(err)=>{
@@ -891,11 +898,6 @@
       })
     })
 
-    app.get('/tagpanel',logger,logger2,function(req,res)
-    {
-      res.render('tagpanel',{obj : req.session.data})
-    })
-
     app.post('/addtag',function(req,res)
     {
       tag.create(req.body,function(error,result)
@@ -921,25 +923,6 @@
         }
       })
     })
-
-    app.get('/showtaglist',logger,logger2,function(req,res)
-    {
-      res.render('showtaglist',{obj : req.session.data})
-    })
-
-    // app.post('/deletetag',function(req,res)
-    // {
-    //   tag.deleteOne({ "_id": req.body}, function(err,result)
-    //   {
-    //     if(err)
-    //     throw err;
-    //     else
-    //     {
-    //       console.log("deleted");
-    //       res.end();
-    //     }
-    //   })
-    // })
 
     app.post('/edituserinfo',function(req,res)
     {
@@ -1024,10 +1007,9 @@
     // res.render('communitybuilder' , { obj: req.session.data })
     })
 
-    
-
     app.post('/createcommunity',function(req,res)
     {
+      console.log(req.body);
       if(!req.body.communityname)
       {
         // console.log("fghjkjhghjjkhjgh");
@@ -1047,7 +1029,8 @@
                console.log(photoname);
                req.body.communityimage = photoname;
                console.log("photo   pdgi");
-                 createcommunity(req)
+                 createcommunity(req);
+                 res.redirect('/community/switchcreatecommunity');
              }
            })
           // createcommunity(req)
@@ -1097,31 +1080,6 @@
         })
     }
 
-    function getMonths(monthno)
-    {
-      var month=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      return month[monthno];
-    }
-
-    function getTime()
-    {
-      var time = new Date()
-      var min = time.getMinutes();
-      var hrs = time.getHours();
-      var format ;
-      if(hrs>12)
-      {
-        hrs = 24-hrs;
-        format = 'PM';
-      }
-      else {
-        format = 'AM';
-      }
-      time = hrs + ':' + min + ' ' + format ;
-      console.log(time);
-      return time;
-    }
-
     app.post('/ownedCommunities',logger,function(req,res)
     {
         community.find( { $or : [{ communityownerid : req.session.data._id },{ communitymember : { $in : [req.session.data._id] } },{ communitymanager : { $in : [req.session.data._id] } },{ communityrequest : { $in : [req.session.data._id] } }] } ).exec(function(error,result) {
@@ -1134,14 +1092,6 @@
           }
         })
     })
-
-    // comminstance.find({ $and: [{ ownerid : { $not : { $eq : req.session.data._id }}},{commjoin : {$nin : [req.session.data._id] }},{commasktojoin : {$nin : [req.session.data._id] }}] }).exec(function(error,result){
-    //     if(error)
-    //     throw error;
-    //     else {
-    //         res.send(JSON.stringify(result));
-    //     }
-    // })
 
     app.post('/updateCommunity',function(req,res)
     {
@@ -1424,25 +1374,6 @@
       })
     })
 
-    app.get('/viewprofile/:pro',logger,function(req,res)
-    {
-      var id = req.params.pro;
-      product.findOne({ "_id" : id },function(error,result)
-      {
-          if(error)
-          throw error;
-          else {
-            if(req.session.data.role=='admin')
-            {
-              res.render('switch_view_profile',{ obj : req.session.data , commo : result });
-            }
-            else {
-              res.render('builder_view_profile',{ obj : req.session.data , commo : result });
-            }
-          }
-      })
-    })
-
     app.listen(3000,function()
     {
           console.log("Running on port 3000");
@@ -1478,20 +1409,3 @@
         res.redirect('/');
       }
     }
-/*
-/******************************************************************************
-
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/
-/******************************************************************************
-
-Welcome to GDB Online.
-GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
-C#, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
-Code, Compile, Run and Debug online from anywhere in world.
-
-*******************************************************************************/

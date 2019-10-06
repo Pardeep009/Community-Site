@@ -20,17 +20,17 @@
 
   function open_adduser_page()
   {
-    window.location = '/adduser'
+    window.location = '/admin/adduser'
   }
 
   function open_userlist_page()
   {
-      window.location = '/userslist'
+      window.location = '/admin/userslist'
   }
 
   function open_communitylist_page()
   {
-      window.location = '/communitylist'
+      window.location = '/admin/communitylist'
   }
 
   function open_switchmodel_page()
@@ -65,7 +65,7 @@
 
   function open_tag_page()
   {
-      window.location = '/tagpanel'
+      window.location = '/admin/tagpanel'
   }
 
   function open_changepassword_page()
