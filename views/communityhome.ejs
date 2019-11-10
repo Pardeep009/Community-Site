@@ -1,0 +1,32 @@
+
+    <% include partials/commonhead.ejs %>
+    <style>
+      #searchCommunitybox {
+        display: none;
+      }
+    </style>
+    <link rel="stylesheet" href="/switchcommunityhome.css">
+      </head>
+      <body>
+        <% include partials/header.ejs %>
+        <div id="viewscreen">
+            <% include partials/sidebar.ejs %>
+            <% include partials/commoncommunity.ejs %>
+         </div>
+      </body>
+      <!-- <% if(obj.role == 'admin') { 
+        console.log(obj.role);
+        %>
+      <script type="text/javascript" src="/sidebar.js"></script>
+      <% } else { %>
+        <script type="text/javascript" src="/usersidebar.js"></script>
+        <% } %> -->
+        <script type="text/javascript" src="/sidebar.js"></script>
+      <script type="text/javascript" src="/switchcommunityhome.js"></script>
+      <script type="text/javascript">
+        window.onload = function()
+        {
+          console.log(":djkdskj")
+        }
+      </script>
+      </html>

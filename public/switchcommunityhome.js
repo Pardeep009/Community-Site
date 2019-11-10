@@ -38,7 +38,7 @@
   function addtoDOM2(obj)
   {
      // console.log(obj);
-    var div = '<div class="col-sm-12 col-xs-12 community-div" style="margin-top:5px;" id=""><div class="col-sm-1 col-xs-3" style="padding:10px;z-index:1"><a href="#"><img src="'+obj.communityimage+'" class="cpic"></a></div><div class="col-sm-10 col-xs-7" style="padding-top:25px;padding-bottom:5px;"><p style="margin:0"><a class="comnametxt" href="#">'+obj.communityname+'</a>&nbsp;&nbsp;&nbsp;<a class="comnametxt-user" href="#">Members('+obj.communitymember.length+')</a></p></div></div>'
+    var div = '<div class="col-sm-12 col-xs-12 community-div" style="margin-top:5px;" id=""><div class="col-sm-1 col-xs-3" style="padding:10px;z-index:1"><a href="/community/discussions/'+obj._id+'"><img src="'+obj.communityimage+'" class="cpic"></a></div><div class="col-sm-10 col-xs-7" style="padding-top:25px;padding-bottom:5px;"><p style="margin:0"><a class="comnametxt" href="/community/communitymembers/'+obj._id+'">'+obj.communityname+'</a>&nbsp;&nbsp;&nbsp;<a class="comnametxt-user" href="/community/communitymembers/'+obj._id+'">Members('+obj.communitymember.length+')</a></p></div></div>'
 
      $("#member-list").append(div);
   }

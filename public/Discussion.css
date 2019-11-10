@@ -84,7 +84,8 @@ img.colorify:not(.all-loaded).all-not-loaded {
   display:none;
 }
 .show-hide-comments{
-  visibility: hidden;
+  /* visibility: hidden; */
+  display: none;
 }
 .commentOptionButton{
   padding:10px;

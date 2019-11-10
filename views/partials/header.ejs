@@ -8,18 +8,22 @@
                     <a onclick="showsidebar()" id="openbox">
                         <span class="glyphicon glyphicon-th-large"></span>
                     </a>
+                    <% if(obj.role == "admin") { %>
                      <span class="label label-success" id="leftadmin">
                         Admin
                     </span>
+                    <% } %>
             </div>
 
             <div id="rightpanel" style="float:right;">
 
-                <img src="<%= obj.photoname %>" onclick="editpage()" id="dpimage" style="height:40px;width: 40px;float:right;">
+                <img src="<%= obj.photoname %>" onclick="openeditpage()" id="dpimage" style="height:40px;width: 40px;float:right;">
 
-                <span class="label label-success" id="rightadmin" style="float:right;">
-                    Admin
-                </span>
+                <% if(obj.role == "admin") { %>
+                    <span class="label label-success" id="rightadmin">
+                       Admin
+                   </span>
+                   <% } %>
 
                 <span class="label label-warning" id="sadmin" style="float:right;">
                     <%= obj.name %>

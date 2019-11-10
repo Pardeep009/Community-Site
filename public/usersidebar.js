@@ -1,3 +1,4 @@
+  
   function showsidebar()
   {
       var element = document.getElementById("viewscreen");
@@ -13,7 +14,7 @@
 
   function open_home_page()
   {
-      window.location = "/profile"
+      window.location = '/editpage'
   }
 
   function open_changepassword_page()
@@ -26,6 +27,11 @@
     window.location = '/community/communitypanel'
   }
 
+  function editpage()
+  {
+    window.location = '/editpage'
+  }
+
   function openeditpage()
   {
     window.location = '/home'
@@ -33,7 +39,6 @@
 
   function open_logout()
   {
-    // window.location = '/logout'
     $.confirm({
       	title: 'Confirm Logout!',
       	content: 'Do you really want logout?',

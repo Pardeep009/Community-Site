@@ -1,7 +1,7 @@
 
   function showsidebar()
   {
-    console.log("sdjksdkjsdkjdskj");
+
     var element = document.getElementById("viewscreen");
     element.classList.toggle("toggle-pc");
 
@@ -35,11 +35,6 @@
 
   function open_switchmodel_page()
   {
-      // document.getElementById("switchmodel-title").innerHTML="Switch as User"
-      // document.getElementById("yes-switch").onclick = function()
-      // {
-      //     window.location = '/switchcommunityhome'
-      // }
       let word = 'Admin';
       if($('p').html()=='admin')
       word = 'User';
@@ -75,9 +70,7 @@
 
   function open_communities_page()
   {
-    console.log("here");
-    // return ;
-    window.location = '/home'
+    window.location = '/community/communitypanel'
   }
 
   function editpage()
@@ -88,6 +81,11 @@
   function aslieditpage()
   {
     window.location = '/editinfo'
+  }
+
+  function openeditpage()
+  {
+    window.location = '/editpage'
   }
 
   function open_logout()

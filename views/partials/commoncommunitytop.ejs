@@ -41,12 +41,14 @@
                 </li>
 
 
-
+                <% if( obj._id == commobj.communityownerid ) { %>
                 <li>
                     <a href="/community/managecommunity/<%=commobj._id%>" class="community-profile-option-btn">
                       Manage Community
                     </a>
                 </li>
+
+                <% } %>
 
 
                 <li>

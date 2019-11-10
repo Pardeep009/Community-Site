@@ -25,7 +25,7 @@
     }))
 
     var mongoose = require('mongoose');
-    var schema = mongoose.Schema;
+    // var schema = mongoose.Schema;
     var admindb = 'mongodb://localhost/cq';
 
     mongoose.connect(admindb);
@@ -39,61 +39,16 @@
       console.log('DB connected');
     })
 
-    var productSchema = new mongoose.Schema({
-        name: String,
-        username: String,
-        password: String,
-        gender: String,
-        city: String,
-        phone: String,
-        role: String,
-        dob : String,
-        status : String,
-        state: String,
-        interests: String,
-        journey: String,
-        expectations: String,
-        photoname: {type : String, default:"/dp.png"},
-        githubid : String,
-        switch: String,
-        req : [{ type: schema.Types.ObjectId, ref: 'communitys' }],            // kis kis commuity ke liye request ki hui hai
-        join : [{ type: schema.Types.ObjectId, ref: 'communitys' }],
-        owned : [{ type: schema.Types.ObjectId, ref: 'communitys' }],
-        manager : [{ type: schema.Types.ObjectId, ref: 'communitys' }],           // kis kis community ka manager not ownner
-        invitations : [{ type: schema.Types.ObjectId, ref: 'communitys' }],     // kis kis community ki invitations ayi hui hai
-    })
+    var comment = require('./Models/comment');
+    var user = require('./Models/user');
+    var tag = require('./Models/tag');
+    var discussion = require('./Models/discussion');
+    var reply = require('./Models/reply');
+    var community = require('./Models/community');
 
-    var tagSchema = new mongoose.Schema({
-        tagname: String,
-        tagcreator: String,
-        tagdate: String,
-        tagflag: String,
-    })
+    app.use('/community',require('./Routes/community.js'));
 
-    var communitySchema = new mongoose.Schema({
-        communityname : String,
-        communitylocation : { type :  String , default : 'Not Added' },
-        communitymembershiprule : String,
-        communityowner : String,
-        communityownerid : { type: schema.Types.ObjectId, ref: 'admins' },
-        communitycreatedate : String,
-        communitydescription : String,
-        communityimage : { type : String , default : '/defaultCommunity.jpg' },
-        communityconfirm : { type : String , default : 'Not Active' },
-        communityrequest : [{ type: schema.Types.ObjectId, ref: 'admins' }],
-        communitymember : [{ type: schema.Types.ObjectId, ref: 'admins' }],
-        communitymanager : [{ type: schema.Types.ObjectId, ref: 'admins' }],
-        invitations : [{ type: schema.Types.ObjectId, ref: 'admins' }],
-        communitydiscussion : { type : Array , default : [] },
-    })
-
-    var product = mongoose.model('admins', productSchema);
-    var tag = mongoose.model('tags', tagSchema);
-    var community = mongoose.model('communitys',communitySchema);
-
-    app.use('/community',require('./Community/community.js'));
-
-    app.use('/admin',require('./Admin/admin.js'));
+    app.use('/admin',require('./Routes/admin.js'));
 
     // app.use('/',function(req,res,next)
     // {
@@ -137,7 +92,7 @@
 
           console.log("githubsignin succesful");
 
-          product.find({
+          user.find({
             githubid : req.session.passport.user._json.id
           })
           .then(data =>
@@ -183,13 +138,13 @@
               photoname : "dp.png",
               state : "active",
               }
-              product.create(obj,function(error,result)
+              user.create(obj,function(error,result)
               {
                 if(error)
                 throw error;
                 else {
                   req.session.data = obj;
-                  product.find({
+                  user.find({
                       githubid : req.session.passport.user._json.id
                   })
                   .then(data =>
@@ -282,13 +237,19 @@
 
     app.get('/',function(req,res)
     {
+      if(req.session.isLogin)
+      {
+        res.redirect('/home');
+      }
+      else {
         res.render('login');
+      }
     })
 
     app.post('/login',function (req,res)
     {
 
-        product.find({
+        user.find({
           username: req.body.username,
           password: req.body.password
         })
@@ -383,32 +344,33 @@
 
     app.get('/profile',logger,function(req,res)
     {
-        if(req.session.data.role=='admin')
-        {
-          if(req.session.data.switch=='admin')
-          {
-            res.render('profile',{ obj : req.session.data });
-          }
-          else {
-              res.render('switcheditpage',{obj : req.session.data})
-          }
-        }
-        else if(req.session.data.role=='communitybuilder') {
-          res.render('buildereditpage',{ obj : req.session.data })
-        }
-        else {
-          res.render('userprofile',{ obj : req.session.data })
-        }
+      res.render('profile',{ obj : req.session.data });
+        // if(req.session.data.role=='admin')
+        // {
+        //   if(req.session.data.switch=='admin')
+        //   {
+        //     res.render('profile',{ obj : req.session.data });
+        //   }
+        //   else {
+        //       res.render('switcheditpage',{obj : req.session.data})
+        //   }
+        // }
+        // else if(req.session.data.role=='communitybuilder') {
+        //   res.render('buildereditpage',{ obj : req.session.data })
+        // }
+        // else {
+        //   res.render('userprofile',{ obj : req.session.data })
+        // }
     })
 
     app.get('/editpage',logger,function(req,res)
     {
-
-      if(req.session.data.switch=="admin")
-        res.render('editpage', { obj : req.session.data });
-        else {
-          res.render('switcheditpage', { obj : req.session.data });
-        }
+      res.render('editpage', { obj : req.session.data });
+      // if(req.session.data.switch=="admin")
+      //   res.render('editpage', { obj : req.session.data });
+      //   else {
+      //     res.render('switcheditpage', { obj : req.session.data });
+      //   }
     })
 
     app.get('/editinfo',logger,function(req,res)
@@ -433,18 +395,19 @@
     app.get('/viewprofile/:pro',logger,function(req,res)
     {
       var id = req.params.pro;
-      product.findOne({ "_id" : id },function(error,result)
+      user.findOne({ "_id" : id },function(error,result)
       {
           if(error)
           throw error;
           else {
-            if(req.session.data.role=='admin')
-            {
-              res.render('switch_view_profile',{ obj : req.session.data , commo : result });
-            }
-            else {
-              res.render('builder_view_profile',{ obj : req.session.data , commo : result });
-            }
+            res.render('view_profile',{ obj : req.session.data , commo : result });
+            // if(req.session.data.role=='admin')
+            // {
+            //   res.render('switch_view_profile',{ obj : req.session.data , commo : result });
+            // }
+            // else {
+            //   res.render('builder_view_profile',{ obj : req.session.data , commo : result });
+            // }
           }
       })
     })
@@ -459,7 +422,7 @@
         // else {
         //   obj.switch='user'
         // }
-        product.create(obj,function(error,result)
+        user.create(obj,function(error,result)
         {
             if(error)
             throw err;
@@ -496,22 +459,7 @@
 
     app.get('/changepassword',logger,function(req,res)
     {
-      if(req.session.data.role=='admin')
-      {
-         if(req.session.data.switch=="admin")
-          res.render('changepassword',{obj : req.session.data});
-           else {
-             res.render('switchchangepassword',{obj : req.session.data});
-           }
-      }
-      else if(req.session.data.role=='communitybuilder')
-      {
-        res.render('builderchangepassword',{ obj : req.session.data });
-      }
-        else {
-          res.render('userchangepassword',{obj : req.session.data});
-        }
-
+      res.render('changepassword',{obj : req.session.data});
     })
 
     app.post('/changepassword',function (req,res)
@@ -521,7 +469,7 @@
           res.send("0")
           else
           {
-              product.updateOne( { "_id" : req.session.data._id } , { $set: { "password" : password.new_password } } , function(error,result)
+              user.updateOne( { "_id" : req.session.data._id } , { $set: { "password" : password.new_password } } , function(error,result)
               {
                   if(error)
                   throw error;
@@ -588,7 +536,7 @@
 
     function getdata(colname,sortorder)
     {
-        product.countDocuments(function(e,count){
+        user.countDocuments(function(e,count){
           var start=parseInt(req.body.start);
           var len=parseInt(req.body.length);
           var role=req.body.role;
@@ -630,14 +578,14 @@
           }
 
 
-          product.find(findobj).countDocuments(function(e,coun){
+          user.find(findobj).countDocuments(function(e,coun){
           getcount=coun;
         }).catch(err => {
           console.error(err)
           res.send(error);
         })
 
-          product.find(findobj).skip(start).limit(len).sort({[colname] : sortorder})
+          user.find(findobj).skip(start).limit(len).sort({[colname] : sortorder})
           .then(data => {
               res.send({"recordsTotal" : count,"recordsFiltered" :getcount,data})
             })
@@ -789,24 +737,10 @@
             let len=parseInt(req.body.length);
             let search=req.body.search.value;
             let getcount=10;
-            // console.log(req.body.search.value.length);
-
 
           var findobj = {
              tagflag : "1",
           };
-            // console.log(role,status);
-            // if(role!="all")
-            //    { findobj.role=role;
-            //    }
-            // else{
-            //     delete findobj["role"];
-            // }
-            // if(status!="all")
-            //     {findobj.status=status;}
-            // else{
-            //     delete findobj["status"];
-            // }
             if(search!='')
                 findobj["$or"]= [{
                 "tagname":  { '$regex' : search, '$options' : 'i' }
@@ -850,7 +784,7 @@
           console.log(photoname);
           console.log(req.session.data._id);
 
-          product.updateOne({ "_id" : req.session.data._id } , { $set : { "photoname" : photoname } }  ,function(error,result)
+          user.updateOne({ "_id" : req.session.data._id } , { $set : { "photoname" : photoname } }  ,function(error,result)
           {
               console.log(result);
               if(error)
@@ -887,7 +821,7 @@
     app.post('/updateuser',function(req,res)
     {
       console.log(req.body);
-      product.updateOne({"_id":req.body._id},{ $set : req.body} ,function(error,result)
+      user.updateOne({"_id":req.body._id},{ $set : req.body} ,function(error,result)
       {
         if(error)
         throw error
@@ -928,7 +862,7 @@
     {
         var obj = req.body;
         console.log(req.session.data._id);
-        product.updateOne({ "_id" : req.session.data._id } , { $set : { "name" : obj.name , "dob" : obj.dob , "gender" : obj.gender , "phone" : obj.phone , "city" : obj.city , "status" : "confirmed" , "interests" : obj.interests , "journey" : obj.journey , "expectations" : obj.expectations  } }  ,function(error,result)
+        user.updateOne({ "_id" : req.session.data._id } , { $set : { "name" : obj.name , "dob" : obj.dob , "gender" : obj.gender , "phone" : obj.phone , "city" : obj.city , "status" : "confirmed" , "interests" : obj.interests , "journey" : obj.journey , "expectations" : obj.expectations  } }  ,function(error,result)
         {
           if(error)
           throw error
@@ -941,20 +875,21 @@
             req.session.data.city = obj.city
             req.session.data.status = "confirmed"
             if(req.session.data.role=='admin')
-            {
-              if(req.session.data.switch=="admin")
-                 res.render('editpage', { obj : req.session.data });
-                 else {
-                   res.render('switcheditpage', { obj : req.session.data });
-                 }
-            }
-            else if(req.session.data.role == 'communitybuilder')
-            {
-                res.render('buildereditpage',{ obj : req.session.data });
-            }
-            else {
-              res.render('userprofile', { obj : req.session.data });
-            }
+            res.render('editpage', { obj : req.session.data });
+            // {
+            //   if(req.session.data.switch=="admin")
+            //      res.render('editpage', { obj : req.session.data });
+            //      else {
+            //        res.render('switcheditpage', { obj : req.session.data });
+            //      }
+            // }
+            // else if(req.session.data.role == 'communitybuilder')
+            // {
+            //     res.render('buildereditpage',{ obj : req.session.data });
+            // }
+            // else {
+            //   res.render('userprofile', { obj : req.session.data });
+            // }
           }
         })
     })
@@ -962,7 +897,7 @@
     app.get('/changeswitch',logger,logger2,function(req,res)
     {
         req.session.data.switch = 'admin'
-        product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
+        user.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
         {
           if(error)
           throw error;
@@ -973,38 +908,31 @@
 
     app.get('/switchcommunityhome',logger,function(req,res)
     {
-      // if(req.session.data.role!='communitybuilder')
-      // {
       if(req.session.data.switch == 'admin')
       {
         req.session.data.switch = 'user'
-        product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "user" } } ,function(error,result)
+        user.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "user" } } ,function(error,result)
         {
           if(error)
           throw error;
           else
           {
-              // res.render('switchcommunityhome' , { obj: req.session.data })
               res.redirect('/community/communitypanel');
           }
         })
       }
       else {
         req.session.data.switch = 'admin'
-        product.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
+        user.updateOne({ "_id" : req.session.data._id } , { $set : { "switch" : "admin" } } ,function(error,result)
         {
           if(error)
           throw error;
           else
           {
-              // res.render('switchcommunityhome' , { obj: req.session.data })
               res.redirect('/home');
           }
         })
       }
-    //   }
-    // else
-    // res.render('communitybuilder' , { obj: req.session.data })
     })
 
     app.post('/createcommunity',function(req,res)
@@ -1012,12 +940,10 @@
       console.log(req.body);
       if(!req.body.communityname)
       {
-        // console.log("fghjkjhghjjkhjgh");
         res.send("no dataa");
       }
       else {
         console.log(req.body);
-        // res.render('switchcreatecommunity',{ obj : req.session.data });
         if(req.body.myImage)
         {
           console.log("photo haiiiiiiii");
@@ -1033,11 +959,9 @@
                  res.redirect('/community/switchcreatecommunity');
              }
            })
-          // createcommunity(req)
         }
         else 
         {
-          // res.send("creating commuity");
           createcommunity(req)
           if(req.session.data == 'admin')
           res.render('switchcreatecommunity',{ obj : req.session.data });
@@ -1050,7 +974,6 @@
 
     function createcommunity(req)
     {
-
         var cid;
         var obj = req.body;
         console.log(obj);
@@ -1061,14 +984,13 @@
         obj.communitycreatedate = dd + "-" + mm + "-" + yyyy
         obj.communityowner = req.session.data.name;
         obj.communityownerid = req.session.data._id;
-        // obj.communitylocation = "Not Added"
         community.create(obj,function(err,result)
         {
             if(err)
             throw err;
             else {
             //  cid = result._id;
-              product.updateOne(  { "_id" : req.session.data._id } , { $push : { owned : result._id } } , function(err,result)
+              user.updateOne(  { "_id" : req.session.data._id } , { $push : { owned : result._id } } , function(err,result)
               {
                   if(err)
                   throw err;
@@ -1107,7 +1029,6 @@
 
     app.post('/community/editcommunity/:pro',function(req,res)
     {
-      // console.log("req body mein "+req.body);
       upload(req,res,(err)=>{
         if(err)
         {
@@ -1115,10 +1036,6 @@
         }
         else
         {
-          console.log(req.file);
-          console.log(photoname);
-          // console.log(req.session.data._id);
-
           community.updateOne({ "_id" : req.params.pro }, { $set : { "communityimage" : photoname } },function(error,result)
           {
               if(error)
@@ -1154,7 +1071,7 @@
 
     app.post('/djoin',function(req,res)
     {
-      product.updateOne( { "_id" : req.session.data._id } , { $push : { join : req.body._id } } , function(error,result)
+      user.updateOne( { "_id" : req.session.data._id } , { $push : { join : req.body._id } } , function(error,result)
       {
           if(error)
           throw error;
@@ -1174,7 +1091,7 @@
 
     app.post('/pjoin',function(req,res)
     {
-        product.updateOne( { "_id" : req.session.data._id } , { $push : { req : req.body._id } } , function(error,result)
+        user.updateOne( { "_id" : req.session.data._id } , { $push : { req : req.body._id } } , function(error,result)
         {
             if(error)
             throw error;
@@ -1199,7 +1116,7 @@
          if(error)
          throw error;
          else {
-             product.updateOne({ "_id" : req.session.data._id },{ $pull : { req : { $in : [req.body._id] } } }, function(error,result){
+             user.updateOne({ "_id" : req.session.data._id },{ $pull : { req : { $in : [req.body._id] } } }, function(error,result){
                if(error)
                throw error;
                else {
@@ -1228,7 +1145,7 @@
           if(err)
           throw err;
           else {
-            product.updateOne( { "_id" : req.body.userid } , {  $push : { join : req.body.commid } , $pull : { req : { $in : [req.body.commid] } }  },function(err,result)
+            user.updateOne( { "_id" : req.body.userid } , {  $push : { join : req.body.commid } , $pull : { req : { $in : [req.body.commid] } }  },function(err,result)
             {
               if(err)
               throw err;
@@ -1248,7 +1165,7 @@
           if(err)
           throw err;
           else {
-            product.updateOne( { "_id" : req.body.userid } , { $pull : { req : { $in : [req.body.commid] } }  },function(err,result)
+            user.updateOne( { "_id" : req.body.userid } , { $pull : { req : { $in : [req.body.commid] } }  },function(err,result)
             {
               if(err)
               throw err;
@@ -1267,7 +1184,7 @@
           if(err)
           throw err;
           else {
-            product.updateOne( { "_id" : req.body.userid } , { $pull : { join : { $in : [req.body.commid] } } ,  $pull : { manager : { $in : [req.body.commid] } } },function(err,result)
+            user.updateOne( { "_id" : req.body.userid } , { $pull : { join : { $in : [req.body.commid] } } ,  $pull : { manager : { $in : [req.body.commid] } } },function(err,result)
             {
               if(err)
               throw err;
@@ -1286,7 +1203,7 @@
           if(err)
           throw err;
           else {
-            product.updateOne( { "_id" : req.body.userid } , {  $push : { manager : req.body.commid } , $pull : { join : { $in : [req.body.commid] } }  },function(err,result)
+            user.updateOne( { "_id" : req.body.userid } , {  $push : { manager : req.body.commid } , $pull : { join : { $in : [req.body.commid] } }  },function(err,result)
             {
               if(err)
               throw err;
@@ -1310,7 +1227,7 @@
           if(err)
           throw err;
           else {
-            product.updateOne( { "_id" : req.body.userid } , {  $push : { join : req.body.commid } , $pull : { manager : { $in : [req.body.commid] } }  },function(err,result)
+            user.updateOne( { "_id" : req.body.userid } , {  $push : { join : req.body.commid } , $pull : { manager : { $in : [req.body.commid] } }  },function(err,result)
             {
               if(err)
               throw err;
@@ -1332,44 +1249,206 @@
       });
     });
 
-    app.post('/createDiscussion/:pro',function(req,res)
+    app.post('/addReply',function(req,res)
     {
-      console.log(req.body);
-      var id = req.params.pro;
-      console.log(id);
-      var time = getTime();
-      community.updateOne({"_id" : id},
+      let obj = req.body;
+      obj.replyownerid = req.session.data._id;
+      obj.replyowername = req.session.data.name;
+      obj.replydate = getTime();
+      obj.replyownerphotoname = req.session.data.photoname;
+      reply.create(obj,function(error,result)
       {
-          $push : {
-              communitydiscussion : {
-                                  "dtitle" : req.body.title,
-                                  "ddetail" : req.body.details,
-                                  "cname" : req.session.data.name,
-                                  "cid" : req.session.data._id,
-                                  "dday" : time,
-                              }
-          }
-      },function(error,result)
-      {
-          if(error)
-          throw error;
-          else {
-            console.log(result);
-              res.send("DiSCUSSSION ENTERED");
-          }
+        if(error)
+        throw error;
+        else {
+          comment.updateOne({ "_id" : obj.commentid },{
+             $push : { reply : result._id },
+             $inc: { replylength : 1 }
+            },function(error,result)
+          {
+            if(error)
+            throw error;
+            else {
+              res.send(obj);
+            }
+          })
+        }
+      })
+    })
 
+    app.post('/deleteReply',function(req,res)
+    {
+      reply.updateOne({"_id" : req.body.replyid},{ $set : { flag : false } },function(error,result)
+      {
+        if(error)
+        throw error;
+        else {
+          comment.updateOne({ "_id" : req.body.commentid },{
+            $inc: { replylength : -1 }
+           },function(error,result)
+           {
+            if(error)
+            throw error;
+            else {
+              res.send('Reply Deleted');
+            }
+           })
+        }
+      })
+    })
+
+    app.post('/addComment',function(req,res)
+    {
+      let obj = req.body;
+      obj.commentownerid = req.session.data._id;
+      obj.commentownername = req.session.data.name;
+      obj.commentownerphoto = req.session.data.photoname;
+      obj.commentdate = getTime();
+      obj.reply = [];
+      obj.replylength = 0;
+      comment.create(obj,function(error,result)
+      {
+        if(error)
+        throw error;
+        else {
+          discussion.updateOne({ "_id" : obj.discussionid },
+          {
+              $push : {
+              discussioncomments : result._id
+            },
+            $inc: { commentslength : 1 }
+          },function(error,rslt)
+          {
+            if(error)
+              throw error;
+              else {
+                console.log(rslt);
+                obj._id = result._id;
+                  res.send(obj);
+                  // res.redirect('/discussions/'+id);
+              }
+          }
+        )
+        }
+      })
+    })
+
+    app.post('/deleteComment',function(req,res)
+    {
+      comment.updateOne({"_id" : req.body.commentid},{ $set : { flag : false } } ,function(error,result)
+      {
+        if(error)
+        throw error;
+        else {
+          discussion.updateOne({ "_id" : req.body.discussionid },
+          {
+            $inc: { commentslength : -1 }
+          },function(error,rslt)
+          {
+            if(error)
+              throw error;
+              else {
+                res.send('Reply Deleted');
+              }
+          }
+        )
+        }
+      })
+    })
+
+    app.post('/createDiscussion',function(req,res)
+    {
+      let obj = req.body;
+      obj.discussiondate = getTime();
+      obj.discussionownername = req.session.data.name;
+      obj.discussionownerid = req.session.data._id;
+      obj.discussiondeleted = false;
+      obj.discussionfeatured = false;
+      obj.discussionglobal = false;
+      obj.commentslength = 0;
+      discussion.create(obj,function(error,result)
+      {
+        if(error)
+        {
+          console.log(error);
+        }
+        else
+        {
+          community.updateOne({"_id" : obj.communityid},
+          {
+              $push : {
+                  communitydiscussion : result._id
+              }
+          },function(error,rslt)
+          {
+              if(error)
+              throw error;
+              else {
+                obj._id = result._id;
+                  res.send(obj);
+              }
+
+          })
+        }
       })
     })
 
     app.post('/getDiscussion',function(req,res)
     {
-        community.findOne({ "_id" : req.body._id },function(err,result)
+        let query = [{ path : 'communitydiscussion' , match : { discussiondeleted : { $ne : true } } , select : { 'discussiontitle' : 1 , 'discussiondetail' : 1 , 'discussionownername' : 1 , 'discussionownerid' : 1 , 'discussiondate' : 1 , 'discussioncomments' : 1 , 'commentslength' : 1 , 'discussionfeatured' : 1 , 'discussionglobal' : 1 } }];
+        community.findOne({ "_id" : req.body.commid }).populate( query ).exec(function(err,result)
+        {
+          if(err)
+          throw err;
+          else {
+            res.send(result);
+          }
+        })
+    })
+
+    app.post('/getDiscussionComments',function(req,res)
+    {
+      let query = [{ path : 'reply',match : { flag : { $ne : false } } ,select : { 'replyownerid' : 1 , 'text' : 1 , 'replyowername' : 1 , 'replyownerphotoname' : 1 , 'replydate' : 1 , 'commentid' : 1 } }];
+      comment.find({ "discussionid" : req.body.discussionid, "flag" : { $ne : false } }).populate(query).exec(function(error,result)
       {
-        if(err)
-        throw err;
+        if(error)
+        throw error;
         else {
-          console.log(result);
           res.send(result);
+        }
+      })
+    })
+
+    app.post('/featureDiscussion',function(req,res)
+    {
+      discussion.updateOne({ "_id" : req.body.discussionid },{ $set : { discussionfeatured : req.body.value } },function(error,result) {
+        if(error)
+        throw error;
+        else {
+          res.send('Discussion Deleted');
+        }
+      })
+    })
+
+    app.post('/globalDiscussion',function(req,res)
+    {
+      discussion.updateOne({ "_id" : req.body.discussionid },{ $set : { discussionglobal : req.body.value } },function(error,result) {
+        if(error)
+        throw error;
+        else {
+          res.send('Discussion Deleted');
+        }
+      })
+    })
+
+    app.post('/deleteDiscussion',function(req,res)
+    {
+      let discussionid = req.body.discussionid;
+      discussion.updateOne({ "_id" : discussionid },{ $set : { discussiondeleted : true } },function(error,result) {
+        if(error)
+        throw error;
+        else {
+          res.send('Discussion Deleted');
         }
       })
     })
@@ -1389,7 +1468,6 @@
 
     function logger(req,res,next)
     {
-      // console.log("------------logger chla dekho---------------");
       if(req.session.isLogin)
       {
         next();
