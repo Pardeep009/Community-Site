@@ -68,9 +68,13 @@
                       <div class="panel-heading">Contact Info</div>
                       <div class="panel-body">
 
+                          <div class="alert alert-danger" style="display: none;" id="wrong-message-display" style="margin:10px;">
+                              <strong id="wrong-message-display-text"></strong>
+                          </div>
+
                         <div class="form-group">
                             <label>Phone :</label>
-                            <input type="text" value="<%= obj.phone  %>" class="form-control" name="phone" maxlength="10" required="" />
+                            <input type="text" value="<%= obj.phone  %>" class="form-control" name="phone" id="phone" maxlength="10" required="" />
                         </div>
 
                         <div class="form-group">
@@ -109,8 +113,8 @@
 
                         <a href="#" onclick="open_changepassword_page()" class="btn btn-warning pull-left btnEditForm" style="margin:1px" id="updatefirst" >Change Password</a>
 
-                        <a href="#" onclick="openeditpage()" class="btn btn-danger pull-right btnEditForm" style="margin:1px" id="updatefirst">Cancel</a>
-                        <input type="submit" onclick="sayhello()" class="btn btn-primary pull-right btnEditForm" style="margin:1px" value="Update" />
+                        <a href="#" onclick="open_home_page()" class="btn btn-danger pull-right btnEditForm" style="margin:1px" id="updatefirst">Cancel</a>
+                        <input type="submit" onclick="" class="btn btn-primary pull-right btnEditForm" style="margin:1px" value="Update" />
                   </div>
                 </form>
 

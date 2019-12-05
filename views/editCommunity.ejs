@@ -25,7 +25,7 @@
                                    <div class="d-flex">
 
                                        <!-- <form class="image-container communitypicform" method="post" enctype="multipart/form-data" action="/community/editcommunity/<= commobj._id >"> -->
-                                         <form class="communitypicform" method="post" enctype="multipart/form-data" action="/community/editcommunity/<%= commobj._id %>" >
+                                         <form class="communitypicform" method="post" enctype="multipart/form-data" action="/community/uploadImage/<%= commobj._id %>" >
                                            <img src="<%= commobj.communityimage  %>" id="community-profile-image" style="width: 150px; height: 150px" class="img-thumbnail allSidesSoft">
                                            <div class="middle">
                                                <label for="changeProfilePicBtn" class="btn btn-default btn-sm" style="width:30%">Change</label>
@@ -41,11 +41,11 @@
                                    </div>
 
                                    <br>
-                                   <form class="communitypicform" method="post" action="/community/editcommunity/<%= commobj._id %>">
+                                   <form class="communitycontentform" method="post" action="/community/updateCommunity/<%= commobj._id %>">
                                      <div class="panel-group">
                                        <div class="form-group">
                                                <label>Community Name :</label>
-                                               <input type="text" value="<%= commobj.communityname %>" class="form-control" name="communityName" maxlength="70" required="">
+                                               <input type="text" value="<%= commobj.communityname %>" class="form-control" name="communityname" maxlength="70" required="">
                                        </div>
 
                                        <div class="form-group">
@@ -56,7 +56,7 @@
 
                                        <div class="form-group">
                                           <label>Community Description:</label>
-                                          <textarea name="communitydescription" type="text" id="communitydescription" class="form-control" value=""></textarea>
+                                          <textarea name="communitydescription" type="text" id="communitydescription" name="communitydescription" class="form-control" value=""></textarea>
                                       </div>
 
                                       <div class="form-group">

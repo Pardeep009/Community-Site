@@ -48,7 +48,7 @@
             "render": function (data, type, row, meta) {
               // console.log("0");
                 data ='<img src="'+row.communityimage+'" style="width:80px; height:80px;'
-                if(row.communityconfirm === 'Active')
+                if(row.communityconfirm === true)
                 data = data + 'border:4px solid green;"></img>'
                 else {
                   data = data + 'border:4px solid red;"></img>'
@@ -60,7 +60,6 @@
           "targets" : 5,
 
           "render" : function (data,type,row,meta) {
-            // console.log(data);
             data = '<center><a class="btn btn-sm editbtn actionbtns" data-target="#updateCommunity" data-toggle="modal" onclick=editCommunity("'+row.communitycreatedate+'","'+encodeURIComponent(row.communityowner)+'","' + encodeURIComponent(row.communityname) + '","' + encodeURIComponent(row.communityconfirm) + '","'+row._id+'") style="margin-top:35px;background-color: #2D312C;color: #fff"><span class="fa fa-edit"></span></a><a class="btn btn-sm infobtn actionbtns" onclick=showComminfo("'+ encodeURIComponent(row.communityname)+'","'+encodeURIComponent(row.communityimage)+'","'+encodeURIComponent(row.communitydescription)+'") data-toggle="modal" data-target="#CommunityInfo" style="margin-top:35px; background-color: #2D312C; color: #fff"><span class="fa fa-info"></span></a></center>'
             return data;
           }
@@ -72,7 +71,6 @@
   	});
 
     $('#refresh').on('click', function () {
-      // console.log("sdkj");
 	    table.ajax.reload(null, false);
   	});
 
@@ -85,35 +83,34 @@
 
   function editCommunity(obj,commo,commn,comms,_id)
   {
-      commn = decodeURIComponent(commn)
-      comms = decodeURIComponent(comms)
-      commo = decodeURIComponent(commo)
-      console.log(commn,comms,commo);
-      $('#CommunityNamePop').html("Update " + commn);
-      $('#CommunityAdminPop').html("Created by " + commo + "," + obj);
-      $('#CommuityName').val(commn);
-      $('#communityStatus').val(comms);
-      $('#editsubmit').off('click').on('click', function() {
-        var obj = Object();
-        obj._id = _id;
-        obj.communityname = $('#CommuityName').val();
-        obj.communityconfirm = $('#communityStatus').val();
+    console.log(comms);
+    commn = decodeURIComponent(commn)
+    comms = decodeURIComponent(comms)
+    commo = decodeURIComponent(commo)
+    console.log(commn,comms,commo);
+    $('#CommunityNamePop').html("Update " + commn);
+    $('#CommunityAdminPop').html("Created by " + commo + "," + obj);
+    $('#CommuityName').val(commn);
+    $('#communityStatus').val(comms);
+    $('#editsubmit').off('click').on('click', function() {
+      var obj = Object();
+      obj._id = _id;
+      obj.communityname = $('#CommuityName').val();
+      obj.communityconfirm = $('#communityStatus').val();
+      var request = new XMLHttpRequest()
+      request.open('POST','/community/updateCommunity/'+obj._id);
+      request.setRequestHeader("Content-Type","application/json");
+      request.send(JSON.stringify(obj));
+      request.onload = function ()
+      {
         console.log(obj);
-        var request = new XMLHttpRequest()
-        request.open('POST','/updateCommunity')
-        request.setRequestHeader("Content-Type","application/json");
-        request.send(JSON.stringify(obj));
-        request.onload = function ()
-        {
-          alert('UPDATED');
-          table.ajax.reload(null,false);
-        }
-      });
+        table.ajax.reload(null,false);
+      }
+    });
   }
 
   function showComminfo(commn,image,commd)
   {
-    // console.log("sdhgcdsj");
     commn = decodeURIComponent(commn)
     commd = decodeURIComponent(commd)
     image = decodeURIComponent(image)

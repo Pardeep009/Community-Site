@@ -1,3 +1,4 @@
+<% include communityevaluation.ejs %>
 <div id="communityHeaderOfMobile" style="padding-top:6px;position:relative;">
     <!-- <div class="container" id="askbtndiv">
         <button class="btn btn-info" id="btnToJoin" style="float:right;border-radius:0">
@@ -9,6 +10,8 @@
             <% } %>
         </button>
     </div> -->
+    <br />
+    <br />
     <center>
         <div id="mobileCq" style="max-height:40px;">
             <a style="color:white;font-size: 15px;font-weight: bold;"><%= commobj.communityowner %></a>
@@ -22,6 +25,7 @@
 </div>
 
 <div  class="container" id="communityHeaderOfLap">
+        <br />
     <div class="col-sm-2 col-xs-12"  id="lapDiv1">
         <a href="/community/communityprofile/<%= commobj._id %>"><img src="<%= commobj.communityimage %>" id="headerCommImage2"></a>
     </div>
@@ -41,7 +45,7 @@
                 </li>
 
 
-                <% if( obj._id == commobj.communityownerid ) { %>
+                <% if( i==-3 || i==-4 ) { %>
                 <li>
                     <a href="/community/managecommunity/<%=commobj._id%>" class="community-profile-option-btn">
                       Manage Community

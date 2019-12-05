@@ -15,6 +15,29 @@
 
   </body>
 
-  <script type="text/javascript" src="editinfo.js"></script>
-  <% include partials/js.ejs %>
+  <script>
+
+      function openeditpage()
+      {
+        // window.location = '/home'
+        window.location = '/profile'
+      }
+      $('form').submit(function()
+      {
+        let pattern = /[6-9]\d{9}/;
+        let phone = $('#phone').val();
+        if(phone.length>10 || phone.search(pattern) == -1)
+        {
+          event.preventDefault();
+          showWrongMessageScreen("Enter Valid Phone Number,must Start with 6|7|8|9 and have excatly 10 digits");
+        }
+      })
+
+      function showWrongMessageScreen(message)
+      {
+        $('#wrong-message-display').show();
+        $('#wrong-message-display-text').html(message);
+      }
+  </script>
+  <script src="/sidebar.js"></script>
   </html>

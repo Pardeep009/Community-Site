@@ -92,7 +92,7 @@
      $('#erole').val($('#'+_id).children().eq(4).text());
      $('#editsubmit').click(function()
      {
-         var obj = {
+         let obj = {
             _id :  _id,
            username : $("#eusername").val(),
            phone : $("#ephone").val(),
@@ -190,12 +190,12 @@
      // $('#msubject').val('This Mail is From CQ');
      $('#sendmailbutton').click(function()
      {
-       var obj = Object();
+       let obj = Object();
        obj.text = $('#mailcontent').val()
        obj.subject = $('#msubject').val()
        obj.username = $('#'+_id).children().eq(0).text()
        console.log(obj);
-       var request = new XMLHttpRequest();
+       let request = new XMLHttpRequest();
        request.open('POST','/sendmail')
        request.setRequestHeader("Content-Type","application/json");
        request.send(JSON.stringify(obj));

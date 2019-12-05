@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="blueimage.css">
-    <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="/blueimage.css">
+    <link rel="stylesheet" href="/header.css">
     <style>
 
       #updatefirst {
@@ -22,12 +22,45 @@
 
     <% include partials/updatefirstheader.ejs %>
     <% include partials/commoneditinfo.ejs %>
-    <% include partials/logoutmodel.ejs %>
+    <div id="logout-model" class="modal fade" role="dialog" style="top:30%">
+      <div class="modal-dialog modal-sm">
+          <div class="modal-content" style="padding:5px;">
+              <div class="modal-header" style="border-style:none; text-align:center;">
+                  <h4 class="modal-title">Confirm Logout!</h4>
+              </div>
+              <div class="model-body">
+                Are you sure you want to logout?
+              </div>
+              <div class="modal-footer" style="border-style:none;">
+                  <button onclick="open_logout()" type="button" class="btn btn-success" data-dismiss="modal">Yes</button>
+                  <button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+              </div>
+          </div>
+      </div>
+  </div>
+  
   </body>
   <script>
     function open_logout()
     {
       window.location = '/logout'
+    }
+    $('form').submit(function()
+    {
+      let pattern = /[6-9]\d{9}/;
+      let phone = $('#phone').val();
+      if(phone.length>10 || phone.search(pattern) == -1)
+      {
+        event.preventDefault();
+        // alert("");
+        showWrongMessageScreen("Enter Valid Phone Number,must Start with 6|7|8|9 and have excatly 10 digits");
+      }
+    })
+
+    function showWrongMessageScreen(msg)
+    {
+      $('#wrong-message-display').show();
+      $('#wrong-message-display-text').html(message);
     }
   </script>
 

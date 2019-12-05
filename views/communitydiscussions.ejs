@@ -69,4 +69,52 @@
   </body>
    <script type="text/javascript" src="/sidebar.js"></script>
    <script type="text/javascript" src="/discussion.js"></script>
+   <script>
+     window.onload = function()
+     {
+        id = document.getElementById("id").textContent;
+        let obj = Object();
+        obj.commid = id;
+        let request = new XMLHttpRequest();
+        request.open('POST','/getDiscussion');
+        request.setRequestHeader("Content-Type","application/json");
+        request.send(JSON.stringify(obj));
+        request.onload = function()
+        {
+          var data = JSON.parse(request.responseText);
+          console.log(data);
+
+          for(let i in data.communitydiscussion)
+          {
+            addtoDiscussionsDOM(data.communitydiscussion[i]);
+          }
+          $('.comment-panel').hide();
+          $('.all-comments-box').hide();
+        }
+     }
+
+     $('#createDiscussionForm').submit(function()
+      {
+        event.preventDefault();
+        let obj = $('form').serializeArray();
+        console.log(obj);
+        obj = serializeObject(obj);
+        obj.communityid = id;
+        console.log(obj);
+        
+        let request = new XMLHttpRequest();
+        request.open('POST','/createDiscussion');
+        request.setRequestHeader("Content-Type","application/json");
+        request.send(JSON.stringify(obj));
+        request.onload = function()
+        {
+          obj = JSON.parse(request.responseText);
+          obj.discussioncomments = [];
+          addtoDiscussionsDOM(obj);
+          $('.comment-panel').hide();
+          $('.all-comments-box').hide();
+        }
+      })
+
+   </script>
 </html>

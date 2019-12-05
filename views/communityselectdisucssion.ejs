@@ -1,0 +1,126 @@
+
+  <% include partials/commonhead.ejs %>
+  <link rel="stylesheet" href="/managecommunity.css" />
+  <link rel="stylesheet" href="/Discussion.css" />
+
+  </head>
+  <body>
+    <p id="id" style="display:none;"><%= commobj._id %></p>
+    <% include partials/header.ejs %>
+    <div id="viewscreen">
+      <% include partials/sidebar.ejs %>
+      <div id="rightview">
+        <div class="container-fluid div-min-width" style="padding:0; min-width:360px;">
+            <div class="row">
+                <div class="col-lg-12">
+                  <% include partials/commoncommunitytop.ejs %>
+                  <br />
+                  <br />
+                  <br />
+                  <div class="container" style="padding: 0 20px 0 20px;">
+                    <div class="panel panel-default allSidesSoft" style="background:white;padding-bottom: 15px;">
+                        <% if(discussion.discussionownerid == obj._id) { %>
+                      <div class="dropup">
+                        <a class="discussion-dropdown-menu" data-toggle="dropdown" style="float:right !important" aria-expanded="false">
+                          <i class="fa fa-ellipsis-h"></i>
+                        </a>
+                        <span class="badge featured-label" id="featured<%= discussion._id %>"  <% if( discussion.discussionfeatured == true ) { %>
+                          style = "display : block"
+                          <% } %>
+                          <% if( discussion.discussionfeatured != true ) { %>
+                            style = "display : none"
+                            <% } %> >Featured</span>
+                          
+                        <span class="badge global-label" id="publish<%= discussion._id %>"  <% if( discussion.discussionglobal == true ) { %>
+                          style = "display : block"
+                          <% } %>
+                          <% if( discussion.discussionglobal != true ) { %>
+                            style = "display : none"
+                            <% } %> >Global</span>
+                        
+                        <ul class="dropdown-menu dropdown-menu-right dropdown-menu-discussion">
+                          
+                            <li>
+                                <a class="request-dropdown-options" onclick="deleteDiscussion('<%= discussion._id  %>')">
+                                  Delete
+                                </a>
+                              </li>
+                          
+                          <% if(obj.role == "admin") { %>
+                          <li id="">
+                            <a class="request-dropdown-options" onclick="toggleDiscussionfeature('<%= discussion._id  %>')" id="featureDiscussion<%= discussion._id %>">
+                              <% if ( discussion.discussionfeatured == true ) { %>
+                                UnFeature 
+                              <% } else { %>
+                                Feature
+                                <% } %>
+                              
+                            </a>
+                          </li>
+                          
+                          <li id="">
+                            <a class="request-dropdown-options" onclick="toggleDiscussionpublish('<%= discussion._id  %>')" id="publishDiscussion<%= discussion._id %>">
+                              <% if ( discussion.discussionglobal == true ) { %>
+                                UnPublish 
+                              <% } else { %>
+                                Publish To CQ
+                                <% } %>
+                            </a>
+                          </li>
+                          <% } %>
+                        </ul>
+                      </div>
+                      <% } %>
+                      <div class="panel-body" style="padding:0; padding-top:10px;">
+                        <div class="col-sm-12 col-xs-12 col-lg-12 col-md-12 discussion-title">
+                          <a class="discussion-title" href="" target="_blank">
+                              <%= discussion.discussiontitle %>
+                          </a>
+                        </div>
+                        <div class="col-sm-12 col-xs-12 col-lg-12 col-md-12 discussion-head"> 
+                          posted by <a href="/viewprofile/<%= discussion.discussionownerid %>"> <%= discussion.discussionownername %> </a> at <%= discussion.discussiondate %>
+                        </div>
+                      </div>
+                      <div class="panel-body" style="padding:0;padding-top:10px;">
+                        <div class="col-sm-12 col-xs-12 col-lg-12 col-md-12 discussion-content" style="font-size:16px">
+                            <%= discussion.discussiondetail %>
+                        </div>
+                      </div>
+                      <div class="panel-body" style="padding:0;padding-top:10px;">
+                        <div class="col-sm-4 col-md-3 col-lg-2 col-xs-8">
+                          <a class="comment-btn-discussion" style="cursor : pointer;" onclick="showComments('<%= discussion._id  %>')" id="">
+                            <i class="fa fa-comment-alt" id="comments-count<%= discussion._id %>"><%= discussion.commentslength %></i> Comments
+                          </a>
+                          <a class="show-comment-btn show-hide-comments comment-btn-discussion" onclick="hideComments('<%= discussion._id  %>')" id="hide-comments<%= discussion._id %>">
+                            Hide
+                          </a>
+                          <a class="show-comment-btn show-hide-comments comment-btn-discussion" onclick="showComments('<%= discussion._id  %>')" id="show-comments<%= discussion._id %>">
+                            Show
+                          </a>
+                        </div>
+                      </div>
+                      <ul class="panel-body all-comments-box" id="allCommentsContainer<%= discussion._id %>" style="display: none;"></ul>
+                      <div class="panel-body comment-panel" id="comment-panel<%= discussion._id %>" style="border: 0px; padding: 0px; display: none;">
+                        <div class="col-sm-12 col-xs-12 col-lg-12 col-md-12 comment-box comment-compose-div-css" style="border-top: 1px solid rgb(223, 223, 223); display: inline;" id="">
+                          <div class="col-sm-1 col-md-1 col-xs-2">
+                            <img src="<%= obj.photoname %>" class="discussion-comment-user">
+                          </div><div class="col-sm-11 col-md-11 col-xs-10">
+                          <div class="input-group reply-input">
+                            <textarea type="text" autocomplete="off" class="form-control input-md comment-textarea" id="comment<%= discussion._id %>" placeholder="reply to this discussion..." rows="1" maxlength="1500"></textarea>
+                            <span class="input-group-btn" style="padding-left:5px">
+                              <button class="btn btn-warning btn-md post-discussion-btn" onclick="addComment('<%= discussion._id %>')">Post</button>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </body>
+   <script type="text/javascript" src="/sidebar.js"></script>
+   <script type="text/javascript" src="/discussion.js"></script>
+</html>

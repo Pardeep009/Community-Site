@@ -78,16 +78,6 @@
     window.location = '/editpage'
   }
 
-  function aslieditpage()
-  {
-    window.location = '/editinfo'
-  }
-
-  function openeditpage()
-  {
-    window.location = '/editpage'
-  }
-
   function open_logout()
   {
     $.confirm({

@@ -1,0 +1,45 @@
+<%      
+        for(i=0;i!=obj.req.length;i++) 
+        { 
+            if(obj.req[i] == commobj._id)
+            {
+                message = 'Requested';
+                i=-1;          
+                break;
+            }
+        }
+
+        if(i!=-1)
+        for(i=0;i!=obj.join.length;i++) 
+        { 
+            if(obj.join[i] == commobj._id)
+            {
+                i=-2;           
+                break;
+            } 
+        }
+
+        if(i!=-1 && i!=-2)
+        for(i=0;i!=obj.owned.length;i++) 
+        { 
+            console.log(obj.owned[i],commobj._id);
+            if(obj.owned[i] == commobj._id)
+            {
+                i=-3;             
+                break;
+            } 
+        }
+
+        if(i!=-1 && i!=-2 && i!=-3)
+        for(i=0;i!=obj.manager.length;i++) 
+        { 
+            if(obj.manager[i] == commobj._id)
+            {
+                i=-4;
+                break;
+            } 
+        }
+
+        if(i>=0)
+        i=-5;
+%>

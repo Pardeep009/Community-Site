@@ -8,8 +8,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
     <!-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> -->
     <% include partials/commonhead.ejs %>
-    <link rel="stylesheet" href="adduser.css">
-    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="/adduser.css">
+    <link rel="stylesheet" href="/common.css">
     <title>CQ</title>
   </head>
   <body>
@@ -29,6 +29,9 @@
                       <br>
                         <h1>Add User</h1>
                           <form class="" action="/adduser" method="POST" >
+                            <div class="alert alert-danger" style="display: none;" id="wrong-message-display" style="margin:10px;">
+                              <strong id="wrong-message-display-text"></strong>
+                            </div>
                             <div class="col-sm-12" >
                               <div class="form-group">
                                 <input type="text" class="form-control" name="name" id="name" placeholder="Name" required />
@@ -36,7 +39,7 @@
                               <br>
 
                               <div class="form-group">
-                                <input type="text" class="form-control" placeholder="Username" name="username" id="username" required />
+                                <input type="text" class="form-control" placeholder="Username" name="username" id="username" autocomplete="off" required />
                               </div>
                               <br>
 
@@ -46,7 +49,7 @@
                               <br>
 
                               <div class="form-group">
-                                <input type="text" name="phone" placeholder="Phone" class="form-control" id="phone" required>
+                                <input type="text" name="phone" placeholder="Phone" class="form-control" id="phone" maxlength="10" required>
                               </div>
                               <br>
 
@@ -70,7 +73,7 @@
                               </div>
 
                               <div class="form-group" style="display:inline-block;">
-                                <input type="submit" onclick="openhomepage()" name="cancel" value="Cancel" class="btn btn-danger" style="margin:1px" >
+                                <input type="submit" onclick="open_home_page()" name="cancel" value="Cancel" class="btn btn-danger" style="margin:1px" >
                               </div>
                             </div>
                           </form>
@@ -83,138 +86,52 @@
                 </div>
               </div>
             </div>
-              <!--
-      <div class="container-fluid adduser-page" style="padding:0">
-              <div class="row">
-                <div class="col-lg-12 scoll-possible" style="padding:0">
-                  <div class="container">
-                    <div class="col-sm-6" style="background-color:#fff;border:5px solid rgba(0,0,0,0.1);margin-top:40px">
-                      <br>
-
-                        <h1>Add User</h1>
-                        <form action="/admin/adduser" method="POST" class="form-horizontal" id="form" autocomplete="nope" role="form">
-                          <div class="col-sm-12">
-                            <div class="form-group">
-                              <input type="text" required="" name="fullname" class="form-control" id="fullname" placeholder="Name" autocomplete="off"><br>
-                            </div>
-
-                            <div class="form-group">
-                                <input type="email" required="" name="username" class="form-control" id="username" placeholder="Email" autocomplete="off" autocorrect="off"><br>
-                            </div>
-                            <div class="form-group">
-                                <input type="password" required="" name="password" class="form-control" placeholder="User Password" autocomplete="new-password" autocorrect="off"><br>
-                            </div>
-
-                  <div class="form-group">
-                      <input type="text" required="" name="phone" class="form-control" maxlength="10" id="phone" placeholder="Phone" autocomplete="off"><br>
-                  </div>
-                  <div class="form-group">
-                      <input type="text" required="" name="city" class="form-control" placeholder="City" autocomplete="false"><br>
-                  </div>
-
-                  <div class="form-group">
-                    <label>Role:</label><br>
-                    <select data-style="btn-info" name="roleoptions" class="form-control">
-                        <optgroup label="Select User Role">
-                          <option value="user">User</option>
-                            <option value="commuity manager">Community Builder</option>
-                          <option value="admin">Admin</option>
-                        </optgroup>
-                    </select>
-                  </div>
-                  <div class="form-group">
-                      <input type="submit" value="Add User" class="btn btn-success">
-                      <a value="Add User" class="btn btn-danger" href="/admin/profile">Cancel</a>
-                  </div>
-                  </div>
-                  </form>
-                  </div>
-                  </div>
-                  </div>
-                  </div>  Header
-                  <script src="/javascripts/Common.js"></script>
-
-                  <script>
-                  var selector = '.nav li';
-                  $(selector).removeClass('active');
-                  $('#add-user-nav').addClass('active');
-                  </script>
-
-                  <script>
-                  var userExist=false;
-                  function validatePhone(phone){
-                  var validity = /^(1\s|1|)?((\(\d{3}\))|\d{3})(\-|\s)?(\d{3})(\-|\s)?(\d{4})$/.test(phone);
-                  return validity;
-                  }
-                  $(document).ready(function(){
-                  $("#username").change(function(){
-                  if($('#username').val().trim())
-                  {
-                  var data=$('#username').val().trim().toLowerCase();
-                  $.ajax({
-                      type: 'POST',
-                      data: JSON.stringify({username:data}),
-                      contentType: 'application/json',
-                      url: '/admin/api/ExistenceUser',
-                      success: function (response) {
-                        console.log(response);
-                          if(response)
-                          {
-                            userExist=true;
-                            // $('#alert-div-avilability').removeClass('alert-success').addClass('alert-danger');
-                            $('#alert-div-avilability').css('display','block');
-                            $('#avilability').css("color", "#8B8B8B");
-                            $('#avilability').text("User "+data+" is already exist");
-                          }
-                          else{
-                            userExist=false;
-                            // $('#alert-div-avilability').removeClass('alert-danger').addClass('alert-success');
-                            $('#alert-div-avilability').css('display','block');
-                            $('#avilability').css("color", "#8B8B8B");
-                            $('#avilability').text(data+" is Avilable");
-                          }
-                      },
-                      error: function (response) {
-
-                      }
-                  });
-                  }
-                  else{
-                  $('#alert-div-avilability').css('display','none');
-                  }
-                  });
-                  });
-                  $('#form').submit(function () {
-
-                  if(userExist)
-                  {
-                  $.alert({
-                  title: 'Inavlid!',
-                  content: 'User already exist',
-                  });
-                  $('#username').val('');
-                  return false;
-                  }
-                  else {
-                  if(validatePhone($('#phone').val()))
-                  {
-                  return true;
-                  }
-                  else {
-                  $.alert({
-                  title: 'Inavlid! Phone Number',
-                  content: 'Phone number is not valid',
-                  });
-                  $('#phone').val('');
-                  return false;
-                  }
-                  }
-
-                  });
-                  </script>
-            </div>
-   </div> -->
   </body>
-  <% include partials/js.ejs %>
-  <script type="text/javascript" src="adduser.js"></script>
+  <script type="text/javascript" src="/sidebar.js"></script>
+  <script>
+
+    $('form').submit(function()
+    {
+      let pattern = /[6-9]\d{9}/;
+      let phone = $('#phone').val();
+      // console.log(phone.search(pattern));
+      if(phone.length>10 || phone.search(pattern) == -1)
+      {
+        event.preventDefault();
+        showWrongMessageScreen("Enter Valid Phone Number,must Start with 6|7|8|9 and have excatly 10 digits");
+      }
+      else {
+        let obj = new Object();
+        obj.username = $('#username').val();
+        pattern = /^[A-Za-z]+\d+@gmail.com$/
+        if(obj.username.search(pattern) == -1)
+        {
+          event.preventDefault();
+          showWrongMessageScreen("Provide valid Username,must have atleast one character followed by a digit ending with @gmail.com,For ex as1@gmail.com is valid username");
+        }
+        else 
+        {
+          let request = new XMLHttpRequest();
+          request.open('POST','/findEmail');
+          request.setRequestHeader("Content-Type","application/json");
+          request.send(JSON.stringify(obj));
+          request.onload = () => {
+            console.log(request.responseText);
+            if(request.responseText == "1")
+            {
+              event.preventDefault();
+              showWrongMessageScreen("Username is already taken");
+            }
+          }
+        }
+      }
+    })
+
+    function showWrongMessageScreen(message)
+    {
+      $('#wrong-message-display').show();
+      $('#wrong-message-display-text').html(message);
+    }
+
+  </script>
 </html>

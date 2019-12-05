@@ -1,86 +1,34 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>CQ</title>
-        <meta name="viewport" content="width=device-width" initial-scale="1.0">
-
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" >
-
-        <!-- BOOTSTRAP 3-->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <link href="/sidebar.css" rel="stylesheet" type = "text/css">
-        <link href="/header.css" rel="stylesheet" type = "text/css">
+<% include partials/commonhead.ejs %>
         <link href="/communityprofile.css" rel="stylesheet"  type="text/css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <style>
+            a {
+                cursor: pointer;
+            }
+        </style>
     </head>
     <body>
         <% include partials/header.ejs %>
-          <p style="display:none;"><%= obj.req  %></p>
-            <div id="viewscreen">
+          <p id="id1" style="display:none;"><%= obj.manager.length %></p>
+          <p id="id2" style="display:none;"><%= commobj.communityownerid %></p>  
+          <div id="viewscreen">
                 <% include partials/sidebar.ejs %>
                     <div id="rightview">
                         <div class="container-fluid" style="min-width:368px;padding:0;">
                             <div class="row">
                                 <div class="col-lg-12" >
                                     <div id="communityHeaderOfMobile" style="padding-top:6px;position:relative;">
-                                        <%  for(i=0;i!=obj.req.length;i++) 
-                                                    { 
-                                                        if(obj.req[i] == commobj._id)
-                                                        {
-                                                            message = 'Requested';
-                                                            i=-1;
-                                                            break;
-                                                        }
-                                                    }
+                                        
+                                        <% include partials/communityevaluation.ejs %>
 
-                                                    if(i!=-1)
-                                                    for(i=0;i!=obj.join.length;i++) 
-                                                    { 
-                                                        if(obj.join[i] == commobj._id)
-                                                        {
-                                                            i=-2;
-                                                            break;
-                                                        } 
-                                                    }
-
-                                                    if(i!=-1 && i!=-2)
-                                                    for(i=0;i!=obj.owned.length;i++) 
-                                                    { 
-                                                        console.log(obj.owned[i],commobj._id);
-                                                        if(obj.owned[i] == commobj._id)
-                                                        {
-                                                            i=-2;
-                                                            break;
-                                                        } 
-                                                    }
-
-                                                    if(i!=-1 && i!=-2)
-                                                    for(i=0;i!=obj.manager.length;i++) 
-                                                    { 
-                                                        if(obj.manager[i] == commobj._id)
-                                                        {
-                                                            i=-2;
-                                                            break;
-                                                        } 
-                                                    }
-
-                                                    if(i!=-1 && i!=-2)
-                                                    i=-3;
-                                                
-                                                 if(i==-1 || i==-3) { %>
+                                                <% if(i==-1 || i==-5) { %>
                                                     <div class="container" id="askbtndiv"> 
-                                                        <button class="btn btn-info" id="btnToJoin" style="float:right;border-radius:0">
-                                                            <i class="fa fa-ask"></i>
-                                                            <% if(i==-1) { %>
-                                                                Requested <% } 
-                                                            else if(commobj.communitymembershiprule=='Direct') { %>
-                                                                Join
-                                                                <% } 
-                                                                else { %>
-                                                                    Ask To Join
-                                                            <% } %>
-                                                        </button>
+                                                        <% if(i==-1) { %> 
+                                                            <button class="btn btn-primary disabled" id="btnToJoin" style="float:right;border-radius:0" > Requested </button>  
+                                                        <% } else if(commobj.communitymembershiprule=='Direct') { %> 
+                                                            <button class="btn btn-primary" id="btnToJoin" onclick="join('<%= commobj._id %>','Direct')" style="float:right;border-radius:0" > <i class="fa fa-ask"></i> Join </button> 
+                                                        <% } else { %> 
+                                                            <button class="btn btn-primary" id="btnToJoin" onclick="join('<%= commobj._id %>','InDirect')" style="float:right;border-radius:0"> <i class="fa fa-ask"></i> Ask To Join </button> 
+                                                        <% } %>
                                                     </div> 
                                                 <% } %>
                                         <center>
@@ -98,37 +46,36 @@
                                       <div  class="container" id="communityHeaderOfLap">
 
                                           <div class="col-sm-2 col-xs-12"  id="lapDiv1">
-                                              <a><img src="<%= commobj.communityimage %>" id="headerCommImage2"></a>
+                                              <a href="/community/communityprofile/<%= commobj._id %>"><img src="<%= commobj.communityimage %>" id="headerCommImage2"></a>
                                           </div>
 
                                           <div class="col-sm-8" id="lapDiv2">
                                             <a href="/community/communityprofile/<%= commobj._id %>"><%= commobj.communityname %></a>
                                           </div>
 
+                                          <% if(i!=-1 && i!=-5) { %>
                                           <div class="col-sm-2 col-xs-12 center-mobile" style="padding-top:10px;float:right">
                                               <div class="dropdown">
                                                   <button class="btn btn-default dropdown-toggle commuity-profile-menu-btn" type="button" data-toggle="dropdown" aria-expanded="false">
                                                     <i class="fa fa-bars"></i>
                                                   </button>
                                                   <ul class="dropdown-menu custom-commuity-dropdown dropdown-menu-right" style="margin-top:40px">
+                                                      
                                                       <li>
                                                           <a href="/community/discussions/<%=commobj._id%>" class="community-profile-option-btn">
                                                             Discussions
                                                           </a>
                                                       </li>
 
-
-
-                                                      <% if( obj._id == commobj.communityownerid ) { %>
+                                                      <% if( i==-3 || i==-4 ) { %>
                                                         <li>
                                                             <a href="/community/managecommunity/<%=commobj._id%>" class="community-profile-option-btn">
                                                               Manage Community
                                                             </a>
                                                         </li>
-                                        
                                                         <% } %>
 
-
+                                        
                                                       <li>
                                                           <a href="/community/communityprofile/<%=commobj._id%>" class="community-profile-option-btn">
                                                             Community Profile
@@ -144,6 +91,7 @@
                                                     </ul>
                                               </div>
                                           </div>
+                                          <% } %>
 
                                       </div>
 
@@ -156,37 +104,50 @@
                                         <div class="col-sm-3 col-xs-12">
                                             <div class="panel panel-default" style="border-radius:0;box-shadow: 0 3px 10px 0 rgba(115,143,147,.3)">
 
+                                               <% if(i!=-1 && i!=-5) { %> 
                                               <div class="panel-heading" style="border:0;border-radius:0">
                                                   Members
                                                   <a href="/community/communitymembers/<%= commobj._id %>" style="float:right">View all</a>
                                               </div>
+                                              <% } %>
 
                                                 <div class="panel-body" style="border:0;border-radius:0">
-                                                    <!-- <div class="col-sm-12 col-xs-12 center-all">
+                                                    <% if(i==-1 || i==-5) { %>
+                                                    <div class="col-sm-12 col-xs-12 center-all">
                                                         <center>
-                                                          <button class="btn btn-primary">
-                                                            <% if(commobj.communitymembershiprule=='Direct'){ %>
-                                                             Join
-                                                            <% } else{ %>
-                                                             Ask To Join
-                                                            <% } %>
-                                                          </button>
+                                                          <% if(i==-1) { %>
+                                                            <button class="btn btn-primary disabled" > Requested </button> 
+                                                          <% } else if(commobj.communitymembershiprule=='Direct') { %> 
+                                                            <button class="btn btn-primary" onclick="join('<%= commobj._id %>','Direct')" > Join </button> 
+                                                          <% } else { %>
+                                                            <button class="btn btn-primary" onclick="join('<%= commobj._id %>','InDirect')" > Ask To Join </button> 
+                                                          <% } %>
                                                         </center>
-                                                    </div> -->
-                                                    <div class="col-sm-12 col-xs-12" style="padding:0" id="membersDiv">
-                                                      <% for(i=0;i<commobj.communitymember.length;i++) { %>
-                                                        <div class="col-sm-6 col-xs-3 col-md-3 col-lg-3 center-all" style="padding:0;">
-                                                          <a href="/viewprofile/<%= commobj.communitymember[i]._id%>" class="communityProfileUserImage">
-                                                            <img class="communityProfileUserImage allSidesSoft" src="<%= commobj.communitymember[i].photoname%>">
-                                                          </a>
-                                                        </div>
-                                                        <% } %>
                                                     </div>
+                                                    <% } else { %>
+                                                    <div class="col-sm-12 col-xs-12" style="padding:0" id="membersDiv">
+                                                      <% for(j=0;j<commobj.communitymember.length && j<4 ;j++) { %>
+                                                        <div class="col-sm-6 col-xs-3 col-md-3 col-lg-3 center-all" style="padding:0;">
+                                                            <a href="/viewprofile/<%= commobj.communitymember[j]._id%>" class="communityProfileUserImage">
+                                                              <img class="communityProfileUserImage allSidesSoft" src="<%= commobj.communitymember[j].photoname%>">
+                                                            </a>
+                                                        </div>
+                                                      <% } %>
+                                                    </div>
+                                                    <% } %>
                                                 </div>
 
                                                 <div class="panel-footer">
-                                                    <p class="center-all" style="margin:0;" id="noOfmemebers">
-                                                        <%= commobj.communitymember.length %> Members
+
+                                                    <p class="center-all" style="margin-bottom: 20px;">
+                                                        <% if(i!=-1 && i!=-5 ) { %>
+                                                            <a href="/community/communitymembers/<%= commobj._id %>" style="float: left;" ><%= commobj.communitymember.length %> Members</a>
+                                                            <% if(i==-2 || i==-4) { %>
+                                                                <a onclick="leaveCommunity('<%= commobj._id %>')" style="float: right;" >Leave Community</a> 
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            <%= commobj.communitymember.length %> Members
+                                                        <% } %>
                                                     </p>
                                                 </div>
 
@@ -213,11 +174,11 @@
                                                         </div>
                                                     </div>
                                                     <div id="community-admins-detail">
-                                                      <% for(i=0;i<commobj.communitymanager.length;i++) { %>
+                                                      <% for(j=0;j<commobj.communitymanager.length && j<4 ;j++) { %>
                                                         <div class="col-sm-12 col-md-12 col-lg-12 adminInfo">
 
                                                             <div class="col-sm-6 col-md-6 col-lg-4 col-xs-4 adminContent center-all">
-                                                                <a><img src="<%= commobj.communitymanager[i].photoname%>" class="adminPic allSides" style="width:50px;height:50px;border-radius:50%;"></a>
+                                                                <a><img src="<%= commobj.communitymanager[j].photoname%>" class="adminPic allSides" style="width:50px;height:50px;border-radius:50%;"></a>
                                                             </div>
 
                                                             <div class="col-sm-6 col-md-6 col-lg-8 col-xs-8 adminContent" style="padding:0;">
@@ -225,7 +186,7 @@
                                                                     <span class="label label-warning" style="margin-top:10px;">Admin</span>
                                                                 </div>
                                                                 <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12" style="padding:0;">
-                                                                    <a href="/viewprofile/<%= commobj.communitymanager[i]._id %>"><%= commobj.communitymanager[i].name %></a>
+                                                                    <a href="/viewprofile/<%= commobj.communitymanager[j]._id %>"><%= commobj.communitymanager[j].name %></a>
                                                                 </div>
                                                             </div>
 
@@ -257,5 +218,63 @@
             </div>
     </body>
     <script src="/sidebar.js"></script>
-    <script src="/communityprofile.js"></script>
+    <script >
+        console.log($('#id1').html(),$('#id2').html());
+        function leaveCommunity(id)
+        {
+            $.confirm({
+            title: 'Leave Community!',
+        	content: 'Do you really want leave this community?',
+        	draggable: true,
+       		buttons: {
+            Yes: {
+                 btnClass: 'btn-success',
+                 action: function ()
+                  {
+                    console.log(id);
+                    let obj = {
+                        communityid : id
+                    }
+                    let request = new XMLHttpRequest();
+                    request.open('POST','/leaveCommunity');
+                    request.setRequestHeader("Content-Type","application/json");
+                    request.send(JSON.stringify(obj))
+                    request.onload = function()
+                    {
+                        window.location = '/community/communityprofile/'+id;
+                    }
+            	}
+       		},
+            No: {
+                btnClass: 'btn-danger',
+                 action: function () {}
+       		},
+        	}
+    		});
+        }
+
+        function join(_id,rule)
+        {
+            console.log(_id);
+            console.log(rule);
+            var obj = Object();
+            obj._id = _id;
+            var request = new XMLHttpRequest();
+            if(rule=='Direct')
+            {
+                request.open('POST','/djoin')
+            }
+            else {
+                request.open('POST','/pjoin')
+            }
+            request.setRequestHeader("content-Type","application/JSON");
+            request.send(JSON.stringify(obj));
+            request.onload = function()
+            {
+                window.location = '/community/communityprofile/'+_id;
+            }
+        }
+
+
+    </script>
 </html>

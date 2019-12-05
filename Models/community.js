@@ -10,7 +10,7 @@ var communitySchema = new mongoose.Schema({
     communitycreatedate : String,
     communitydescription : String,
     communityimage : { type : String , default : '/defaultCommunity.jpg' },
-    communityconfirm : { type : String , default : 'Not Active' },
+    communityconfirm : { type : Boolean , default : true },
     communityrequest : [{ type: schema.Types.ObjectId, ref: 'admins' }],
     communitymember : [{ type: schema.Types.ObjectId, ref: 'admins' }],
     communitymanager : [{ type: schema.Types.ObjectId, ref: 'admins' }],
