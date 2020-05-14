@@ -3,17 +3,16 @@ const user = require('../Models/user');
 const discussion = require('../Models/discussion');
 const comment = require('../Models/comment');
 const reply = require('../Models/reply');
-const multer = require('../Middlewares/multer');
 
 function createcommunity(req)
 {
-    var cid;
-    var obj = req.body;
+    let cid;
+    let obj = req.body;
     console.log(obj);
-    var today = new Date()
-    var dd = today.getDate();
-    var mm = getMonths(today.getMonth());
-    var yyyy = today.getFullYear();
+    let today = new Date()
+    let dd = today.getDate();
+    let mm = getMonths(today.getMonth());
+    let yyyy = today.getFullYear();
     obj.communitycreatedate = dd + "-" + mm + "-" + yyyy
     obj.communityowner = req.session.data.name;
     obj.communityownerid = req.session.data._id;
@@ -44,7 +43,7 @@ exports.createcommunity = (req,res) => {
     console.log(req.body);
     if(req.body.myImage)
     {
-      console.log("photo haiiiiiiii");
+      console.log("photo found");
         upload(req,res,(err)=>
         {
           if(err)
@@ -52,7 +51,7 @@ exports.createcommunity = (req,res) => {
           else {
             console.log(photoname);
             req.body.communityimage = photoname;
-            console.log("photo   pdgi");
+            console.log("photo uploaded");
               createcommunity(req);
               // res.redirect('/community/switchcreatecommunity');
               res.render('createcommunity',{ obj : req.session.data });
@@ -115,16 +114,16 @@ exports.getCommunityList = (req,res) => {
   {
 
       community.countDocuments(function(e,count){
-        var start=parseInt(req.body.start);
+        let start=parseInt(req.body.start);
         console.log(start);
-        var len=parseInt(req.body.length);
-        var mrule=req.body.communitymembershiprule;
-        var search=req.body.search.value;
-        var getcount=10;
+        let len=parseInt(req.body.length);
+        let mrule=req.body.communitymembershiprule;
+        let search=req.body.search.value;
+        let getcount=10;
         console.log(req.body.search.value.length);
 
 
-      var findobj={};
+      let findobj={};
         console.log(mrule);
         if(mrule!="all")
             { findobj.communitymembershiprule=mrule;}
@@ -167,51 +166,42 @@ exports.getCommunityList = (req,res) => {
 }
 
 exports.uploadImage = (req,res) => {
-  multer.upload(req,res,(err)=>{
-    if(err)
+    community.updateOne({ "_id" : req.params.pro }, { $set : { "communityimage" : req.file.secure_url } },function(error,result)
     {
-      throw err;
-    }
-    else
-    {
-      community.updateOne({ "_id" : req.params.pro }, { $set : { "communityimage" : req.file.filename } },function(error,result)
-      {
-          if(error)
-          throw error;
-          else {
-            res.redirect('/community/editcommunity/'+req.params.pro+'');
-          }
-      })
-    }
-  })
+        if(error)
+        throw error;
+        else {
+          res.redirect('/community/editcommunity/'+req.params.pro+'');
+        }
+    })
 }
 
 exports.promteUser = (req,res) => {
-    community.updateOne( { "_id" : req.body.commid } , {  $push : { communitymanager : req.body.userid } , $pull : { communitymember : { $in : [req.body.userid] } }  },function(err,result)
-    {
-        if(err)
-        throw err;
-        else {
-          user.updateOne( { "_id" : req.body.userid } , {  $push : { manager : req.body.commid } , $pull : { join : { $in : [req.body.commid] } }  },function(err,result)
-          {
-            if(err)
-            throw err;
-            else {
-              req.session.data.manager.push(req.body.commid);
-              for(let i=0;i<req.session.data.join.length;i++)
-               {
-                 if(req.session.data.join[i] == req.body.commid)
-                 {
-                   req.session.data.join.splice(i,1);
-                   break;
-                 }
-               }
-              res.send("DONE");
-            }
-          })
-        }
-    })
-  }
+  community.updateOne( { "_id" : req.body.commid } , {  $push : { communitymanager : req.body.userid } , $pull : { communitymember : { $in : [req.body.userid] } }  },function(err,result)
+  {
+      if(err)
+      throw err;
+      else {
+        user.updateOne( { "_id" : req.body.userid } , {  $push : { manager : req.body.commid } , $pull : { join : { $in : [req.body.commid] } }  },function(err,result)
+        {
+          if(err)
+          throw err;
+          else {
+            req.session.data.manager.push(req.body.commid);
+            for(let i=0;i<req.session.data.join.length;i++)
+              {
+                if(req.session.data.join[i] == req.body.commid)
+                {
+                  req.session.data.join.splice(i,1);
+                  break;
+                }
+              }
+            res.send("DONE");
+          }
+        })
+      }
+  })
+}
 
 exports.demoteUser = (req,res) => {
     community.updateOne( { "_id" : req.body.commid } , {  $push : { communitymember : req.body.userid } , $pull : { communitymanager : { $in : [req.body.userid] } }  },function(err,result)
@@ -434,7 +424,7 @@ exports.deleteDiscussion = (req,res) => {
 }
 
 exports.get = (req,res) => {
-    var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } }];
+    let query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } }];
     community.findOne({ "_id" : req.body._id }).populate( query ).exec(function (err, person) {
     if (err) throw err;
     // console.log(person);
@@ -523,7 +513,7 @@ exports.acceptRequest = (req,res) => {
 }
 
 exports.getMembers = (req,res) => {
-  var query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communityrequest' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'invitations' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } } ];
+  let query = [{path : 'communityownerid' , select : { 'name' : 1 , 'photoname' : 1 } },{path : 'communitymember' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communityrequest' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'invitations' , select : { 'name' : 1 , 'photoname' : 1 } },{ path : 'communitymanager' , select : { 'name' : 1 , 'photoname' : 1 } } ];
   community.findOne({ "_id" : req.body._id }).populate( query ).exec(function (err, person) {
   if (err) throw err;
   res.send(person);

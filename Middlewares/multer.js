@@ -1,22 +1,32 @@
-const path = require('path')
-const multer = require('multer');
+const cloudinary = require("cloudinary");
+const cloudinaryStorage = require("multer-storage-cloudinary");
+const multer = require("multer");
+const crypto = require("crypto");
 
-let photoname ;
+cloudinary.config({
+  cloud_name: process.env.cloudName,
+  api_key: process.env.cloudinaryKey,
+  api_secret: process.env.cloudinarySecret
+});
 
-const storage = multer.diskStorage({
-    destination : './public/uploadimages/',
-    filename : function(req, file, callback)
-    {
-        photoname ='/' + file.fieldname + '-' + Date.now() + '@' +path.extname(file.originalname);
-        callback(null,photoname);
-    }
-})
+const storage = cloudinaryStorage({
+  cloudinary,
+  folder: "communitySite",
+  allowedFormats: ["jpeg", "jpg", "png"],
+  filename: (req, file, cb) => {
+    console.log('here');
+    let buf = crypto.randomBytes(16);
+    buf = buf.toString("hex");
+    let uniqueFileName = file.originalname.replace(/\.jpeg|\.jpg|\.png/gi, "");
+    uniqueFileName += buf;
+    console.log('here');
+    cb(undefined, uniqueFileName);
+  }
+});
 
-exports.upload = multer({
-    storage : storage,
-    photoname : photoname,
-    // limits : {
-    //   fileSize : 100000
-    // }
-}).single('myImage');
+const upload = multer({ storage });
 
+module.exports = {
+  cloudinary,
+  upload
+};

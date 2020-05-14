@@ -1,9 +1,9 @@
 const user = require('../Models/user');
-const multer = require('../Middlewares/multer');
+// const multer = require('../Middlewares/multer');
+// const { upload } = require('../Middlewares/multer');
 const nodemailer = require('../Middlewares/nodemailer');
 
 exports.login = (req,res) => {
-    console.log('hey');
     user.findOne({
         username: req.body.username,
         password: req.body.password
@@ -25,7 +25,7 @@ exports.login = (req,res) => {
                  else
                  {
                    req.session.isLogin = 1;
-                   var obj = Object();
+                   let obj = Object();
                    obj = data
                    req.session.data = obj;
                    res.send(data)
@@ -59,7 +59,8 @@ exports.findEmail = (req,res) => {
 }
 
 exports.adduser = (req,res) => {
-    var obj = req.body;
+    console.log('add user');
+    let obj = req.body;
     obj.status='pending'
     if(obj.role=='admin')
     obj.switch="admin";
@@ -71,7 +72,7 @@ exports.adduser = (req,res) => {
         {
             console.log(result);
             let mailOptions = {
-                from: 'pardeepbhatt5254@gmail.com',
+                from: req.session.data.username,
                 to: req.body.username,
                 subject: 'Welcome To CQ',
                 text: "Your Username is: " + req.body.username + "\n" + " Password is: " + req.body.password
@@ -84,30 +85,13 @@ exports.adduser = (req,res) => {
                     res.redirect('/home');
                 }
             })
-            // var transporter = nodemailer.createTransport({
-            //     service: 'gmail',
-            //     auth: {
-            //     user: 'yourmail@gmail.com',
-            //     pass: 'yourpassword'
-            //     }
-            // });
-
-            
-
-            // transporter.sendMail(mailOptions, function(error, info){
-            //     if (error) {
-            //     console.log(error);
-            //     } else {
-            //     console.log('Email sent: ' + info.res);
-            //     }
-            // });
         }
     })
 }
 
 exports.sendmail = (req,res) => {
     let mailOptions = {
-        from: 'pardeepbhatt5254@gmail.com',
+        from: req.session.data.username,
         to: req.body.username,
         subject: req.body.subject,
         html: req.body.text,
@@ -186,16 +170,15 @@ exports.getUsersList = (req,res) => {
     function getdata(colname,sortorder)
     {
         user.countDocuments(function(e,count){
-        var start=parseInt(req.body.start);
-        var len=parseInt(req.body.length);
-        var role=req.body.role;
-        var status=req.body.status;
-        var search=req.body.search.value;
-        var getcount=10;
-        // console.log(req.body.search.value.length);
+        let start=parseInt(req.body.start);
+        let len=parseInt(req.body.length);
+        let role=req.body.role;
+        let status=req.body.status;
+        let search=req.body.search.value;
+        let getcount=10;
 
 
-    var findobj={};
+    let findobj={};
         console.log(role,status);
         if(role!="all")
             { findobj.role=role;
@@ -240,7 +223,6 @@ exports.getUsersList = (req,res) => {
         })
         .catch(err => {
             console.error(err)
-        //  res.send(error)
         })
     });
     }
@@ -260,39 +242,25 @@ exports.updateuser = (req,res) => {
 }
 
 exports.upload = (req,res) => {
-    console.log("req body mein "+req.body);
-    multer.upload(req,res,(err)=>
+
+    user.updateOne({ "_id" : req.session.data._id } , { $set : { "photoname" : req.file.secure_url } }  ,function(error,result)
     {
-        if(err)
+        if(error)
         {
-            throw err;
+            throw error;
         }
         else
         {
-            console.log(req.file);
-            // console.log(req.session.data._id);
-
-            user.updateOne({ "_id" : req.session.data._id } , { $set : { "photoname" : req.file.filename } }  ,function(error,result)
+            console.log(req.session.data);
+            req.session.data.photoname = req.file.secure_url;
+            if(req.session.data.status == "pending")
             {
-                if(error)
-                {
-                throw error;
-                }
-                else
-                {
-                    console.log("update vale mai");
-                    console.log(req.session.data);
-                    req.session.data.photoname = req.file.filename;
-                    if(req.session.data.status == "pending")
-                    {
-                        res.render('updatefirst' , { obj : req.session.data } );
-                    }
-                    else
-                    {
-                        res.render('editinfo' , { obj : req.session.data } );
-                    }
-                }
-            })
+                res.render('updatefirst' , { obj : req.session.data } );
+            }
+            else
+            {
+                res.render('editinfo' , { obj : req.session.data } );
+            }
         }
     })
 }
@@ -304,9 +272,10 @@ exports.edituserinfo = (req,res) => {
     user.updateOne({ "_id" : req.session.data._id } , { $set : { "name" : obj.name , "dob" : obj.dob , "gender" : obj.gender , "phone" : obj.phone , "city" : obj.city , "status" : "confirmed" , "interests" : obj.interests , "journey" : obj.journey , "expectations" : obj.expectations  } }  ,function(error,result)
     {
         if(error)
-        throw error
+        throw error;
         else
         {
+            console.log('hiiiiii');
             req.session.data.name = obj.name
             req.session.data.dob = obj.dob
             req.session.data.gender = obj.gender

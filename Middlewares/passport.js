@@ -1,14 +1,14 @@
 
-    let express = require('express');
-    let router = express.Router();
-    let path = require('path');
+    const express = require('express');
+    const router = express.Router();
+    const path = require('path');
 
     router.use(express.static(path.join(__dirname,'../public')));
 
-    let passport = require('passport')
-    let GitHubStrategy = require('passport-github').Strategy;
+    const passport = require('passport')
+    const GitHubStrategy = require('passport-github').Strategy;
 
-    let user = require('../Models/user');
+    const user = require('../Models/user');
 
     router.use(passport.initialize());
     router.use(passport.session());
@@ -30,7 +30,6 @@
           },function(accessToken, refreshToken, profile, cb) {
               console.log('###############################');
               console.log('passport callback function fired');
-              console.log("-----------profile ka khtm---------------");
               return cb(null,profile);
 
           })
@@ -41,41 +40,41 @@
       router.get('/github/callback',passport.authenticate('github', { failureRedirect: 'login.html' }), function (req, res)
       {
           console.log("githubsignin succesful");
-          user.find({
+          user.findOne({
             githubid : req.session.passport.user._json.id
           })
           .then(data =>
           {
-            if(data.length>0)
+            if(data)
             {
-              console.log("-----------MIL GEYA---------");
+              console.log("-----------User Exists---------");
               console.log(data);
               req.session.isLogin = 1;
-              var obj = Object();
+              let obj = Object();
               obj.isLogin = 1;
-              obj.username = data[0].username ;
-              obj.city=data[0].city;
-              obj.role=data[0].role;
-              obj.name=data[0].name;
-              obj.status=data[0].status;
-              obj.state=data[0].state;
-              obj.githubid = data[0].githubid;
-              obj.photoname= data[0].photoname;
-              if(data[0].gender)
+              obj.username = data.username ;
+              obj.city=data.city;
+              obj.role=data.role;
+              obj.name=data.name;
+              obj.status=data.status;
+              obj.state=data.state;
+              obj.githubid = data.githubid;
+              obj.photoname= data.photoname;
+              if(data.gender)
               {
-                obj.gender = data[0].gender;
-                obj.phone = data[0].phone;
-                obj.dob = data[0].dob;
+                obj.gender = data.gender;
+                obj.phone = data.phone;
+                obj.dob = data.dob;
               }
-              obj._id=data[0]._id;
+              obj._id=data._id;
               req.session.data=obj;
               console.log('github login successful')
               res.redirect('/home');
             }
             else
             {
-              console.log("nahi MILA");
-              var obj = {
+              console.log("User not Found");
+              let obj = {
               name : req.session.passport.user._json.name,
               username : req.session.passport.user._json.email,
               city : req.session.passport.user._json.location,
@@ -96,8 +95,7 @@
                   })
                   .then(data =>
                   {
-                    console.log("see the result " + result);
-                    req.session.data._id = data[0]._id;
+                    req.session.data._id = data._id;
                     req.session.isLogin = 1;
                     res.redirect('/home');
                   })
@@ -115,4 +113,4 @@
           })
       })
 
-      module.exports = router;
+module.exports = router;

@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const schema = mongoose.Schema;
 
-var userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
     name: String,
     username: String,
     password: String,
@@ -25,5 +25,5 @@ var userSchema = new mongoose.Schema({
     invitations : [{ type: schema.Types.ObjectId, ref: 'communitys' }],     // kis kis community ki invitations ayi hui hai
 })
 
-var user = mongoose.model('admins', userSchema);
+const user = mongoose.model('admins', userSchema);
 module.exports = user;

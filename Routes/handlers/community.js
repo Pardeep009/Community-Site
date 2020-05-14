@@ -1,12 +1,13 @@
 
-  let express = require('express');
-  let router = express.Router();
-  let path = require('path');
+  const express = require('express');
+  const router = express.Router();
+  const path = require('path');
+  const checkLogin = require('../../Middlewares/checkLogin');
 
   router.use(express.static(path.join(__dirname,'../../public')));
 
-  let discussion = require('../../Models/discussion');
-  let community = require('../../Models/community');
+  const discussion = require('../../Models/discussion');
+  const community = require('../../Models/community');
 
   router.get('/switchcreatecommunity',checkLogin,function(req,res)
   {
@@ -116,16 +117,5 @@
           }
         })
       })
-
-  function checkLogin(req,res,next)
-  {
-      if(req.session.isLogin)
-      {
-          next();
-      }
-      else{
-          res.redirect('/');
-      }
-  }
 
   module.exports = router;

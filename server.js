@@ -4,29 +4,30 @@
     }
 
     const express = require('express');
-    const path = require('path');
     const app = express();
     const session = require('express-session');
-    
+
+    const path = require('path');
+
+    app.use(express.static(path.join(__dirname,'../public')));
+    app.use(express.static(path.join(__dirname,'../public/uploadimages')));
+
+    // view engine setup
     app.set('views', path.join(__dirname, 'views'));
     app.set('view engine', 'ejs');
-
-    app.use(express.static(path.join(__dirname,'public')));
-    app.use(express.static(path.join(__dirname,'public/uploadimages')));
 
     app.use(express.urlencoded({extended: true}));
     app.use(express.json());
 
     app.use(session({
-      secret: "xYzUCAchitkara",
-      resave: false,
        saveUnintialized: true,
+       secret: `${process.env.secret}`,
     }))
 
     const mongoose = require('mongoose');
-    const admindb = `mongodb://localhost/${process.env.databasename}`;
+    const db_url = process.env.db_url;
 
-    mongoose.connect(admindb);
+    mongoose.connect(db_url);
 
     mongoose.connection.on('error',(err) => {
       console.log('DB connection Error');

@@ -2,6 +2,9 @@
     const express = require('express');
     const router = express.Router();
     const path = require('path');
+    const checkLogin = require('../../Middlewares/checkLogin');
+    const { upload } = require('../../Middlewares/multer');
+    const isAdmin  = require('../../Middlewares/isAdmin');
 
     router.use(express.static(path.join(__dirname,'../../public')));
 
@@ -26,14 +29,13 @@
 
     router.get('/home',checkLogin,function(req,res)
     {
-        console.log("idhar chla mein");
-        if(req.session.data.status == 'pending')
+        if(req.session.data.status === 'pending')
         {
           res.render('updatefirst',{obj : req.session.data})
         }
         else
         {
-            if(req.session.data.role=='admin')
+            if(req.session.data.role==='admin')
             {
                if(req.session.data.switch=='user') {
                 res.redirect('/community/communitypanel');
@@ -41,10 +43,6 @@
                else {
                 res.render('profile',{obj : req.session.data});
               }
-            }
-            else if(req.session.data.role=='communitybuilder')
-            {
-              res.redirect('/community/communitypanel');
             }
             else if(req.session.data.role=='user') {
               res.render('userprofile',{obj : req.session.data});
@@ -134,24 +132,13 @@
       }
     })
 
-    router.get('/logout',function(req,res)
+    router.get('/logout',checkLogin,function(req,res)
     {
       req.session.isLogin = 0;
       req.session.destroy();
       res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
       res.render('login');
     })
-
-    function checkLogin(req,res,next)
-    {
-        if(req.session.isLogin)
-        {
-            next();
-        }
-        else{
-            res.redirect('/');
-        }
-    }
 
     function logger2(req,res,next)
     {
@@ -166,83 +153,84 @@
 
     router.post('/login',userController.login);
 
-    router.post('/findEmail',userController.findEmail);
+    router.post('/findEmail',checkLogin,userController.findEmail);
 
-    router.post('/adduser',userController.adduser);
+    router.post('/adduser',checkLogin,isAdmin,userController.adduser);
 
-    router.post('/changepassword',userController.changepassword);
+    router.post('/changepassword',checkLogin,userController.changepassword);
 
-    router.post('/sendmail',userController.sendmail);
+    router.post('/sendmail',checkLogin,isAdmin,userController.sendmail);
 
-    router.post('/ul',userController.getUsersList);
+    router.post('/ul',checkLogin,isAdmin,userController.getUsersList);
 
-    router.post('/cl',communityController.getCommunityList);
+    router.post('/cl',checkLogin,isAdmin,communityController.getCommunityList);
 
-    router.post('/tl',tagController.getTags);
+    router.post('/tl',checkLogin,isAdmin,tagController.getTags);
 
-    router.post('/upload',userController.upload);
+    // router.post('/upload',checkLogin,,userController.upload);
+    router.post('/upload',checkLogin,upload.single('myImage'),userController.upload);
 
-    router.post('/updateuser',userController.updateuser);
+    router.post('/updateuser',checkLogin,userController.updateuser);
 
-    router.post('/addtag',tagController.addtag);
+    router.post('/addtag',checkLogin,tagController.addtag);
 
-    router.post('/deleteTag',tagController.deleteTag);
+    router.post('/deleteTag',checkLogin,isAdmin,tagController.deleteTag);
 
-    router.post('/edituserinfo',userController.edituserinfo);
+    router.post('/edituserinfo',checkLogin,userController.edituserinfo);
 
-    router.post('/createcommunity',communityController.createcommunity);
+    router.post('/createcommunity',checkLogin,isAdmin,communityController.createcommunity);
 
-    router.post('/ownedCommunities',communityController.ownedCommunities);
+    router.post('/ownedCommunities',checkLogin,communityController.ownedCommunities);
 
-    router.post('/community/updateCommunity/:pro',communityController.updateCommunity);
+    router.post('/community/updateCommunity/:pro',checkLogin,isAdmin,communityController.updateCommunity);
 
-    router.post('/community/uploadImage/:pro',communityController.uploadImage);
+    router.post('/community/uploadImage/:pro',checkLogin,isAdmin,upload.single('myImage'),communityController.uploadImage);
 
-    router.post('/freeCommunities',communityController.freeCommunities);
+    router.post('/freeCommunities',checkLogin,communityController.freeCommunities);
 
-    router.post('/djoin',communityController.djoin);
+    router.post('/djoin',checkLogin,communityController.djoin);
 
-    router.post('/pjoin',communityController.pjoin);
+    router.post('/pjoin',checkLogin,communityController.pjoin);
 
-    router.post('/cancelRequest',communityController.cancelRequest);
+    router.post('/cancelRequest',checkLogin,communityController.cancelRequest);
 
-    router.post('/leaveCommunity',communityController.leaveCommunity);
+    router.post('/leaveCommunity',checkLogin,communityController.leaveCommunity);
 
-    router.post('/getMembers',communityController.getMembers);
+    router.post('/getMembers',checkLogin,communityController.getMembers);
 
-    router.post('/acceptRequest',communityController.acceptRequest);
+    router.post('/acceptRequest',checkLogin,communityController.acceptRequest);
 
-    router.post('/rejectRequest',communityController.rejectRequest);
+    router.post('/rejectRequest',checkLogin,communityController.rejectRequest);
 
-    router.post('/removeUser',communityController.removeUser);
+    router.post('/removeUser',checkLogin,communityController.removeUser);
 
-    router.post('/promoteUser',communityController.promteUser);
+    router.post('/promoteUser',checkLogin,communityController.promteUser);
 
-    router.post('/demoteUser',communityController.demoteUser);
+    router.post('/demoteUser',checkLogin,communityController.demoteUser);
 
-    router.post('/get',communityController.get);
+    router.post('/get',checkLogin,communityController.get);
 
-    router.post('/addReply',communityController.addReply);
+    router.post('/addReply',checkLogin,communityController.addReply);
 
-    router.post('/deleteReply',communityController.deleteReply);
+    router.post('/deleteReply',checkLogin,communityController.deleteReply);
 
-    router.post('/addComment',communityController.addComment);
+    router.post('/addComment',checkLogin,communityController.addComment);
 
-    router.post('/deleteComment',communityController.deleteComment);
+    router.post('/deleteComment',checkLogin,communityController.deleteComment);
 
-    router.post('/createDiscussion',communityController.createDiscussion);
+    router.post('/createDiscussion',checkLogin,communityController.createDiscussion);
 
-    router.post('/getDiscussion',communityController.getDiscussion);
+    router.post('/getDiscussion',checkLogin,communityController.getDiscussion);
 
-    router.post('/getDiscussionComments',communityController.getDiscussionComments);
+    router.post('/getDiscussionComments',checkLogin,communityController.getDiscussionComments);
 
-    router.post('/featureDiscussion',communityController.featureDiscussion);
+    router.post('/featureDiscussion',checkLogin,communityController.featureDiscussion);
 
-    router.post('/globalDiscussion',communityController.globalDiscussion);
+    router.post('/globalDiscussion',checkLogin,communityController.globalDiscussion);
 
-    router.post('/deleteDiscussion',communityController.deleteDiscussion);
+    router.post('/deleteDiscussion',checkLogin,communityController.deleteDiscussion);
 
-    router.post('/getObj',function(req,res)
+    router.post('/getObj',checkLogin,function(req,res)    // get data of user in session
     {
       res.send(req.session.data);
     })
