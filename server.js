@@ -22,20 +22,17 @@
     app.use(session({
        saveUnintialized: true,
        secret: `${process.env.secret}`,
-    }))
+       resave: false,
+    }));
 
     const mongoose = require('mongoose');
-    const db_url = process.env.db_url;
-
-    mongoose.connect(db_url);
-
-    mongoose.connection.on('error',(err) => {
-      console.log('DB connection Error');
+    mongoose
+    .connect(process.env.db_url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     })
-
-    mongoose.connection.on('connected',(err) => {
-      console.log('DB connected');
-    })
+    .then(() => console.log('DB Connected...'))
+    .catch(error => console.log('DB Connectioin error', error));
 
     app.use('/',require('./Routes/'));
 
