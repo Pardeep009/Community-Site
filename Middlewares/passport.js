@@ -25,7 +25,7 @@
           new GitHubStrategy({
           clientID: `${process.env.clientID}`,
           clientSecret: `${process.env.clientSecret}`,
-          callbackURL: "/auth/github/callback",
+          callbackURL: `${process.env.callbackUrl}`,
           session:true
           },function(accessToken, refreshToken, profile, cb) {
               console.log('###############################');
