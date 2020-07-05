@@ -1,14 +1,14 @@
 
-      <% include partials/commonhead.ejs %>
+      <%- include('partials/commonhead'); -%>
       <link rel="stylesheet" href="tagpanel.css">
       <link rel="stylesheet" href="common.css">
     </head>
     <body>
       <p id="tagcreator" style="display:none;"><%= obj.name %></p>
-      <% include partials/header.ejs %>
+      <%- include('partials/header'); -%>
       <div id="viewscreen">
 
-        <% include partials/sidebar.ejs %>
+        <%- include('partials/sidebar'); -%>
 
         <div id="rightview">
           <div class="div-min-width" style="padding:0">
@@ -42,6 +42,6 @@
 
       </div>
     </body>
-    <% include partials/js.ejs %>
+    <%- include('partials/js') -%>
     <script type="text/javascript" src="tagpanel.js" ></script>
   </html>

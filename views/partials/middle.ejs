@@ -2,12 +2,12 @@
   </head>
   <body>
 
-      <% include header.ejs %>
+      <%- include('header') -%>
     <div id="viewscreen" >
 
-        <% include sidebar.ejs %>
-        <% include commonprofile.ejs %>
+        <%- include('sidebar') -%>
+        <%- include('commonprofile') -%>
     </div>
 
   </body>
-  <% include js.ejs %>
+  <%- include('js') -%>

@@ -1,4 +1,4 @@
-<% include partials/commonhead.ejs %>
+<%- include('partials/commonhead'); -%>
         <link href="/communityprofile.css" rel="stylesheet"  type="text/css">
         <style>
             a {
@@ -7,18 +7,18 @@
         </style>
     </head>
     <body>
-        <% include partials/header.ejs %>
+        <%- include('partials/header'); -%>
           <p id="id1" style="display:none;"><%= obj.manager.length %></p>
           <p id="id2" style="display:none;"><%= commobj.communityownerid %></p>  
           <div id="viewscreen">
-                <% include partials/sidebar.ejs %>
+                <%- include('partials/sidebar'); -%>
                     <div id="rightview">
                         <div class="container-fluid" style="min-width:368px;padding:0;">
                             <div class="row">
                                 <div class="col-lg-12" >
                                     <div id="communityHeaderOfMobile" style="padding-top:6px;position:relative;">
                                         
-                                        <% include partials/communityevaluation.ejs %>
+                                        <%- include('partials/communityevaluation') -%>
 
                                                 <% if(i==-1 || i==-5) { %>
                                                     <div class="container" id="askbtndiv"> 

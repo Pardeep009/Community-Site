@@ -1,16 +1,16 @@
 
-  <% include partials/commonhead.ejs %>
+  <%- include('partials/commonhead'); -%>
   <link rel="stylesheet" href="editinfo.css">
   <link rel="stylesheet" href="blueimage.css">
   </head>
   <body>
 
-    <% include partials/header.ejs %>
+    <%- include('partials/header'); -%>
 
     <div id="viewscreen">
 
-      <% include partials/sidebar.ejs %>
-      <% include partials/commoneditinfo.ejs %>
+      <%- include('partials/sidebar'); -%>
+      <%- include('partials/commoneditinfo') -%>
     </div>
 
   </body>

@@ -1,5 +1,5 @@
 
-  <% include partials/commonhead.ejs %>
+  <%- include('partials/commonhead'); -%>
   <style>
     .pc {
       display : block !important;
@@ -8,14 +8,14 @@
   <link rel="stylesheet" href="/switchcommunityhome.css">
   </head>
   <body>
-  <% include partials/header.ejs %>
+  <%- include('partials/header'); -%>
   <div id="viewscreen" >
-      <% include partials/sidebar.ejs %>
+      <%- include('partials/sidebar'); -%>
       <div id="rightview">
         <div class="container-fluid div-min-width aaaa" style="padding:0; min-width:360px;">
             <div class="row">
                 <div class="col-lg-12" style="padding:0;">
-                  <% include partials/minibluehead.ejs %>
+                  <%- include('partials/minibluehead') -%>
                   <div class="container" style="padding:0; margin-top:15px;">
                     <div id="community-lists">
 

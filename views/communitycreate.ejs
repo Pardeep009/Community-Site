@@ -1,5 +1,5 @@
 
-    <% include partials/commonhead.ejs %>
+    <%- include('partials/commonhead'); -%>
     <link rel="stylesheet" href="switchcommunityhome.css">
     <link rel="stylesheet" href="trumbowyg.css">
     <script type="text/javascript" src="trumbowyg.min.js"></script>
@@ -10,10 +10,10 @@
     </style>
   </head>
   <body>
-    <% include partials/userheader.ejs %>
+    <%- include('partials/userheader') -%>
     <div id="viewscreen" >
-        <% include partials/usersidebar.ejs %>
-        <% include partials/commoncreatecommunity.ejs %>
+        <%- include('partials/usersidebar') -%>
+        <%- include('partials/commoncreatecommunity') -%>
     </div>
   </body>
   <script type="text/javascript" src="/usersidebar.js">  </script>
