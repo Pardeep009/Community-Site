@@ -1,17 +1,20 @@
-var mongoose = require('mongoose');
-var schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const schema = mongoose.Schema;
 
-var commentSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
     text : String,
     flag : Boolean,
     discussionid : {  type: schema.Types.ObjectId, ref: 'communitys' },
     commentownerid : { type: schema.Types.ObjectId, ref: 'admins' },
     commentownername : { type: String },
     commentownerphoto : { type: String },
-    commentdate : { type : String },
+    commentdate : {
+      type: Date,
+      default: Date.now(),
+    },
     reply : [{ type: schema.Types.ObjectId, ref: 'replys' }],
     replylength : Number,
   })
 
-var comment = mongoose.model('comments',commentSchema);
+const comment = mongoose.model('comments',commentSchema);
 module.exports=comment;

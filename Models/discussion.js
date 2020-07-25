@@ -1,14 +1,17 @@
-var mongoose = require('mongoose');
-var schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const schema = mongoose.Schema;
 
-var communitydiscussion = new mongoose.Schema({
+const communitydiscussion = new mongoose.Schema({
     discussiondeleted : Boolean,
     communityid : { type: schema.Types.ObjectId, ref: 'communitys' },
     discussiontitle : String,
     discussiondetail : String,
     discussionownername : String,
     discussionownerid : { type: schema.Types.ObjectId, ref: 'admins' },
-    discussiondate : String,
+    discussiondate : {
+      type: Date,
+      default: Date.now(),
+    },
     discussiontags : String,
     discussioncomments : [{ type: schema.Types.ObjectId, ref: 'comments' }],
     commentslength : Number,
@@ -17,5 +20,5 @@ var communitydiscussion = new mongoose.Schema({
   })
 
 
-var discussion = mongoose.model('discussions',communitydiscussion);
+const discussion = mongoose.model('discussions',communitydiscussion);
 module.exports = discussion;

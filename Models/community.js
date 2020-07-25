@@ -1,13 +1,16 @@
-var mongoose = require('mongoose');
-var schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const schema = mongoose.Schema;
 
-var communitySchema = new mongoose.Schema({
+const communitySchema = new mongoose.Schema({
     communityname : String,
     communitylocation : { type :  String , default : 'Not Added' },
     communitymembershiprule : String,
     communityowner : String,
     communityownerid : { type: schema.Types.ObjectId, ref: 'admins' },
-    communitycreatedate : String,
+    communitycreatedate : {
+        type: Date,
+        default: Date.now(),
+    },
     communitydescription : String,
     communityimage : { type : String , default : '/defaultCommunity.jpg' },
     communityconfirm : { type : Boolean , default : true },
@@ -18,5 +21,5 @@ var communitySchema = new mongoose.Schema({
     communitydiscussion : [{ type: schema.Types.ObjectId, ref: 'discussions' }],
 })
 
-var community = mongoose.model('communitys',communitySchema);
+const community = mongoose.model('communitys',communitySchema);
 module.exports = community;

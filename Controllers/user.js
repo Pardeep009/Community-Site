@@ -10,6 +10,7 @@ exports.login = (req,res) => {
       })
       .then(data =>
         {
+          console.log(req.body);
           if(data)
           {
                if(req.session.isLogin)

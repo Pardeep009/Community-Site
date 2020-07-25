@@ -1,15 +1,18 @@
-var mongoose = require('mongoose');
-var schema = mongoose.Schema;
+const mongoose = require('mongoose');
+const schema = mongoose.Schema;
 
-var replySchema = new mongoose.Schema({
+const replySchema = new mongoose.Schema({
     text : String,
     flag : Boolean,
     replyownerid : { type : schema.Types.ObjectId, ref: 'admins' },
     replyowername : String,
     replyownerphotoname : String,
-    replydate : String,
+    replydate : {
+      type: Date,
+      default: Date.now(),
+    },
     commentid : { type: schema.Types.ObjectId, ref: 'comments' },
   })
 
-var reply = mongoose.model('replys',replySchema);
+const reply = mongoose.model('replys',replySchema);
 module.exports = reply;

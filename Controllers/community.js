@@ -8,12 +8,6 @@ function createcommunity(req)
 {
     let cid;
     let obj = req.body;
-    console.log(obj);
-    let today = new Date()
-    let dd = today.getDate();
-    let mm = getMonths(today.getMonth());
-    let yyyy = today.getFullYear();
-    obj.communitycreatedate = dd + "-" + mm + "-" + yyyy
     obj.communityowner = req.session.data.name;
     obj.communityownerid = req.session.data._id;
     community.create(obj,function(err,result)
@@ -235,7 +229,6 @@ exports.addReply = (req,res) => {
     let obj = req.body;
     obj.replyownerid = req.session.data._id;
     obj.replyowername = req.session.data.name;
-    obj.replydate = getTime();
     obj.replyownerphotoname = req.session.data.photoname;
     reply.create(obj,function(error,result)
     {
@@ -282,7 +275,6 @@ exports.addComment = (req,res) => {
     obj.commentownerid = req.session.data._id;
     obj.commentownername = req.session.data.name;
     obj.commentownerphoto = req.session.data.photoname;
-    obj.commentdate = getTime();
     obj.reply = [];
     obj.replylength = 0;
     comment.create(obj,function(error,result)
@@ -334,7 +326,6 @@ exports.deleteComment = (req,res)=> {
 
 exports.createDiscussion = (req,res) => {
     let obj = req.body;
-    obj.discussiondate = getTime();
     obj.discussionownername = req.session.data.name;
     obj.discussionownerid = req.session.data._id;
     obj.discussiondeleted = false;
