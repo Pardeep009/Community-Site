@@ -5,7 +5,7 @@
   <div class="container-fluid div-min-width" style="min-width:360px;">
     <div class="row">
       <div class="col-lg-12" style="padding:0;">
-        <div class="mobile profile-pic-center-main-div" style="">
+        <div class="mobile profile-pic-center-main-div" >
           <img src="<%= obj.photoname %>" class="profile-pic-center allSides">
         </div>
         <div class="container" >
@@ -18,6 +18,15 @@
                       <input type="file" name="myImage" accept="image/*" />
                       <input type="submit" value="Upload Photo"/>
                   </form>
+
+                  <!-- <form class="communitypicform" method="post" enctype="multipart/form-data" action="/upload" >
+                    <img src="<%= commobj.communityimage %>" id="community-profile-image" style="width: 150px; height: 150px" class="img-thumbnail allSidesSoft">
+                    <div class="middle">
+                        <label for="changeProfilePicBtn" class="btn btn-default btn-sm" style="width:30%">Change</label>
+                        <input type="file" style="visibility:hidden;" id="changeProfilePicBtn" name="myImage" accept="image/*" >
+                        <input type="submit" style="display:none;" class="btn btn-default btn-sm" id="submitImage" value="Confirm">
+                    </div>
+                  </form> -->
 
                 </div>
                 <br>
@@ -85,7 +94,7 @@
                       </div>
                     </div>
 
-                    <div class="panel panel-default">
+                    <!-- <div class="panel panel-default">
                       <div class="panel-heading">Personal Info</div>
                       <div class="panel-body">
 
@@ -106,7 +115,7 @@
 
                         </div>
                       </div>
-                    </div>
+                    </div> -->
 
                   </div>
                   <div class="form-group">

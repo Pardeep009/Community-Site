@@ -10,7 +10,7 @@
     <div id="viewscreen">
 
       <%- include('partials/sidebar'); -%>
-      <%- include('partials/commoneditinfo') -%>
+      <%- include('partials/commoneditinfo'); -%>
     </div>
 
   </body>
@@ -40,4 +40,42 @@
       }
   </script>
   <script src="/sidebar.js"></script>
+  <script>
+    $("#changeProfilePicBtn").change(function()
+    {
+      // if($("label[for='changeProfilePicBtn']").html()=='Confirm')
+      // {
+      //     console.log(":img uploaded");
+      // }
+      // else {
+        readURL(this);
+        $("#changeProfilePicBtn").hide();
+        $("label[for='changeProfilePicBtn']").hide();
+        $('#submitImage').show();
+        $('#btnDiscard').show();
+        // $('#changeProfilePicBtn').attr('type','button');
+    });
+
+    $('#btnDiscard').click(function()
+    {
+      $('#btnDiscard').hide();
+      $('#submitImage').hide();
+      $("#changeProfilePicBtn").show();
+      $("label[for='changeProfilePicBtn']").show();
+      $('#community-profile-image').attr('src',$('#id').html());
+    })
+
+    function readURL(input) {
+      if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+          $('#community-profile-image').attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+  </script>
+
   </html>
