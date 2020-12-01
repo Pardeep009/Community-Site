@@ -28,4 +28,10 @@ router.get('/showtaglist', checkLogin, isAdmin, (req, res) => {
 	res.render('showtaglist', { obj: req.session.data });
 });
 
+router.use('/', (req, res) => {
+	return res.status(404).json({
+		error: 'requested address was not found on server',
+	});
+})
+
 module.exports = router;

@@ -28,7 +28,6 @@ exports.createcommunity = (req, res) => {
 	if (!req.body.communityname) {
 		res.send('no dataa');
 	} else {
-		console.log(req.body);
 		if (req.body.myImage) {
 			console.log('photo found');
 			upload(req, res, (err) => {
@@ -50,8 +49,6 @@ exports.createcommunity = (req, res) => {
 };
 
 exports.getCommunityList = (req, res) => {
-	console.log(req.body);
-
 	if (req.body.order[0].column == 0) {
 		if (req.body.order[0].dir == 'asc') getdata('communityname', 1);
 		else getdata('communityname', -1);

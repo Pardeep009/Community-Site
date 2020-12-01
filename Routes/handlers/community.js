@@ -37,7 +37,7 @@ router.get('/manageCommunity/:pro', checkLogin, (req, res) => {
 	community.findOne({ _id: id }, (err, result) => {
 		if (err) throw err;
 		else if (result.communityconfirm == false) {
-			res.render('notactive', { message: { msg: 'Error: This community is deactivated or may be deleted by superadmin' } });
+			res.render('notactive', { message: { msg: 'Error: This community is deactivated or may be deleted by admin' } });
 		} else {
 			res.render('manageCommunity', { obj: req.session.data, commobj: result });
 		}
@@ -90,5 +90,11 @@ router.get('/selecteddiscussion/:communityid/:discussionid', checkLogin, (req, r
 		}
 	});
 });
+
+router.use('/', (req, res) => {
+	return res.status(404).json({
+		error: 'requested address was not found on server',
+	});
+})
 
 module.exports = router;

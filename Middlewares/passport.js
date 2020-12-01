@@ -100,4 +100,10 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 		});
 });
 
+router.use('/', (req, res) => {
+	return res.status(404).json({
+		error: 'requested address was not found on server',
+	});
+})
+
 module.exports = router;

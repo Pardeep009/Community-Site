@@ -7,5 +7,5 @@ const tagSchema = new mongoose.Schema({
 	tagflag: String,
 });
 
-const tag = mongoose.model('tags', tagSchema);
+const tag = mongoose.model('tag', tagSchema);
 module.exports = tag;

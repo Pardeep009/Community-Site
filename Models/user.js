@@ -13,21 +13,28 @@ const userSchema = new mongoose.Schema({
 	dob: String,
 	status: String,
 	state: String,
-	// interests: String,
-	// journey: String,
-	// expectations: String,
 	photoname: {
 		type: String,
 		default: 'https://res.cloudinary.com/dpwuer7z7/image/upload/v1596008242/communitySite/dp_tqvogc.png',
 	},
 	githubid: String,
 	switch: String,
-	req: [{ type: schema.Types.ObjectId, ref: 'communitys' }], // kis kis commuity ke liye request ki hui hai
-	join: [{ type: schema.Types.ObjectId, ref: 'communitys' }],
-	owned: [{ type: schema.Types.ObjectId, ref: 'communitys' }],
-	manager: [{ type: schema.Types.ObjectId, ref: 'communitys' }], // kis kis community ka manager not ownner
-	invitations: [{ type: schema.Types.ObjectId, ref: 'communitys' }], // kis kis community ki invitations ayi hui hai
+	req: [{
+		type: schema.Types.ObjectId, ref: 'community'
+	}], // array holding id's of communities which are requested by person to join
+	join: [{
+		type: schema.Types.ObjectId, ref: 'community'
+	}], // array holding id's of communities which are joined by person
+	owned: [{
+		type: schema.Types.ObjectId, ref: 'community'
+	}], // array holding id's of communities which are owned by person
+	manager: [{
+		type: schema.Types.ObjectId, ref: 'community'
+	}], // array holding id's of communities which are managed by person
+	invitations: [{
+		type: schema.Types.ObjectId, ref: 'community'
+	}], // array holding id's of communities which have invited the person to join
 });
 
-const user = mongoose.model('admins', userSchema);
+const user = mongoose.model('admin', userSchema);
 module.exports = user;
