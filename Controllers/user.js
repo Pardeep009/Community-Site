@@ -1,6 +1,4 @@
 const user = require('../Models/user');
-// const multer = require('../Middlewares/multer');
-// const { upload } = require('../Middlewares/multer');
 const nodemailer = require('../Middlewares/nodemailer');
 
 exports.login = (req, res) => {
@@ -207,7 +205,7 @@ exports.edituserinfo = (req, res) => {
 		$set: {
 			name: obj.name, dob: obj.dob, gender: obj.gender, phone: obj.phone, city: obj.city, status: 'confirmed', interests: obj.interests, journey: obj.journey, expectations: obj.expectations,
 		},
-	}, (error, result) => {
+	}, (error) => {
 		if (error) throw error;
 		else {
 			req.session.data.name = obj.name;
@@ -216,7 +214,7 @@ exports.edituserinfo = (req, res) => {
 			req.session.data.phone = obj.phone;
 			req.session.data.city = obj.city;
 			req.session.data.status = 'confirmed';
-			res.render('editpage', { obj: req.session.data });
+			res.redirect('home');
 		}
 	});
 };

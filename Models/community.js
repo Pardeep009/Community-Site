@@ -5,12 +5,12 @@ const schema = mongoose.Schema;
 const communitySchema = new mongoose.Schema({
 	communityname: String,
 	communitylocation: {
-		type: String, default: 'Not Added'
+		type: String, default: 'Not Added',
 	},
 	communitymembershiprule: String,
 	communityowner: String,
 	communityownerid: {
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user',
 	},
 	communitycreatedate: {
 		type: Date,
@@ -18,25 +18,25 @@ const communitySchema = new mongoose.Schema({
 	},
 	communitydescription: String,
 	communityimage: {
-		type: String, default: '/defaultCommunity.jpg'
+		type: String, default: '/defaultCommunity.jpg',
 	},
 	communityconfirm: {
-		type: Boolean, default: true
+		type: Boolean, default: true,
 	},
 	communityrequest: [{
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user',
 	}],
 	communitymember: [{
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user',
 	}],
 	communitymanager: [{
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user',
 	}],
 	invitations: [{
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user',
 	}],
 	communitydiscussion: [{
-		type: schema.Types.ObjectId, ref: 'discussion'
+		type: schema.Types.ObjectId, ref: 'discussion',
 	}],
 });
 

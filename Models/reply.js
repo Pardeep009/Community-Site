@@ -5,7 +5,9 @@ const schema = mongoose.Schema;
 const replySchema = new mongoose.Schema({
 	text: String,
 	flag: Boolean,
-	replyownerid: { type: schema.Types.ObjectId, ref: 'admin' },
+	replyownerid: {
+		type: schema.Types.ObjectId, ref: 'user',
+	},
 	replyowername: String,
 	replyownerphotoname: String,
 	replydate: {

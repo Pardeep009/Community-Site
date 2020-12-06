@@ -9,7 +9,7 @@ const commentSchema = new mongoose.Schema({
 		type: schema.Types.ObjectId, ref: 'community'
 	},
 	commentownerid: {
-		type: schema.Types.ObjectId, ref: 'admin'
+		type: schema.Types.ObjectId, ref: 'user'
 	},
 	commentownername: {
 		type: String

@@ -1,19 +1,7 @@
+/* eslint-disable radix */
 const tag = require('../Models/tag');
 
 exports.getTags = (req, res) => {
-	if (req.body.order[0].column == 0) {
-		if (req.body.order[0].dir == 'asc') getdata('tagname', 1);
-		else getdata('tagname', -1);
-	} else if (req.body.order[0].column == 1) {
-		if (req.body.order[0].dir == 'asc') getdata('tagcreator', 1);
-		else getdata('tagcreator', -1);
-	} else if (req.body.order[0].column == 2) {
-		if (req.body.order[0].dir == 'asc') getdata('tagdate', 1);
-		else getdata('tagdate', -1);
-	} else {
-		getdata('tagname', 1);
-	}
-
 	function getdata(colname, sortorder) {
 		tag.countDocuments((e, count) => {
 			const start = parseInt(req.body.start);
@@ -24,7 +12,7 @@ exports.getTags = (req, res) => {
 			const findobj = {
 				tagflag: '1',
 			};
-			if (search != '') {
+			if (search !== '') {
 				findobj.$or = [{
 					tagname: { $regex: search, $options: 'i' },
 				}, {
@@ -36,11 +24,11 @@ exports.getTags = (req, res) => {
 				delete findobj.$or;
 			}
 
-			tag.find(findobj).countDocuments((e, coun) => {
+			tag.find(findobj).countDocuments((er, coun) => {
 				getcount = coun;
 			}).catch((err) => {
 				console.error(err);
-				res.send(error);
+				res.send(err);
 			});
 
 			tag.find(findobj).skip(start).limit(len).sort({ [colname]: sortorder })
@@ -52,10 +40,22 @@ exports.getTags = (req, res) => {
 				});
 		});
 	}
+	if (req.body.order[0].column === 0) {
+		if (req.body.order[0].dir === 'asc') getdata('tagname', 1);
+		else getdata('tagname', -1);
+	} else if (req.body.order[0].column === 1) {
+		if (req.body.order[0].dir === 'asc') getdata('tagcreator', 1);
+		else getdata('tagcreator', -1);
+	} else if (req.body.order[0].column === 2) {
+		if (req.body.order[0].dir === 'asc') getdata('tagdate', 1);
+		else getdata('tagdate', -1);
+	} else {
+		getdata('tagname', 1);
+	}
 };
 
 exports.addtag = (req, res) => {
-	tag.create(req.body, (error, result) => {
+	tag.create(req.body, (error) => {
 		if (error) throw error;
 		else {
 			res.end();
@@ -64,7 +64,7 @@ exports.addtag = (req, res) => {
 };
 
 exports.deleteTag = (req, res) => {
-	tag.updateOne({ _id: req.body._id }, { $set: { tagflag: '0' } }, (error, result) => {
+	tag.updateOne({ _id: req.body._id }, { $set: { tagflag: '0' } }, (error) => {
 		if (error) throw error;
 		else {
 			res.end();

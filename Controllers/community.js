@@ -5,7 +5,6 @@ const comment = require('../Models/comment');
 const reply = require('../Models/reply');
 
 function createcommunity(req) {
-	let cid;
 	const obj = req.body;
 	obj.communityowner = req.session.data.name;
 	obj.communityownerid = req.session.data._id;
@@ -26,48 +25,27 @@ function createcommunity(req) {
 
 exports.createcommunity = (req, res) => {
 	if (!req.body.communityname) {
-		res.send('no dataa');
+		res.send('no data');
+	} else if (req.body.myImage) {
+		console.log('photo found');
+		upload(req, res, (err) => {
+			if (err) throw err;
+			else {
+				console.log(photoname);
+				req.body.communityimage = photoname;
+				console.log('photo uploaded');
+				createcommunity(req);
+				// res.redirect('/community/switchcreatecommunity');
+				res.render('createcommunity', { obj: req.session.data });
+			}
+		});
 	} else {
-		if (req.body.myImage) {
-			console.log('photo found');
-			upload(req, res, (err) => {
-				if (err) throw err;
-				else {
-					console.log(photoname);
-					req.body.communityimage = photoname;
-					console.log('photo uploaded');
-					createcommunity(req);
-					// res.redirect('/community/switchcreatecommunity');
-					res.render('createcommunity', { obj: req.session.data });
-				}
-			});
-		} else {
-			createcommunity(req);
-			res.render('createcommunity', { obj: req.session.data });
-		}
+		createcommunity(req);
+		res.render('createcommunity', { obj: req.session.data });
 	}
 };
 
 exports.getCommunityList = (req, res) => {
-	if (req.body.order[0].column == 0) {
-		if (req.body.order[0].dir == 'asc') getdata('communityname', 1);
-		else getdata('communityname', -1);
-	} else if (req.body.order[0].column == 1) {
-		if (req.body.order[0].dir == 'asc') getdata('communitymembershiprule', 1);
-		else getdata('communitymembershiprule', -1);
-	} else if (req.body.order[0].column == 2) {
-		if (req.body.order[0].dir == 'asc') getdata('communitylocation', 1);
-		else getdata('communitylocation', -1);
-	} else if (req.body.order[0].column == 3) {
-		if (req.body.order[0].dir == 'asc') getdata('communityowner', 1);
-		else getdata('communityowner', -1);
-	} else if (req.body.order[0].column == 4) {
-		if (req.body.order[0].dir == 'asc') getdata('communitycreatedate', 1);
-		else getdata('communitycreatedate', -1);
-	} else {
-		getdata('communityname', 1);
-	}
-
 	function getdata(colname, sortorder) {
 		community.countDocuments((e, count) => {
 			const start = parseInt(req.body.start);
@@ -80,10 +58,10 @@ exports.getCommunityList = (req, res) => {
 
 			const findobj = {};
 			console.log(mrule);
-			if (mrule != 'all') { findobj.communitymembershiprule = mrule; } else {
+			if (mrule !== 'all') { findobj.communitymembershiprule = mrule; } else {
 				delete findobj.communitymembershiprule;
 			}
-			if (search != '') {
+			if (search !== '') {
 				findobj.$or = [{
 					communityname: { $regex: search, $options: 'i' },
 				}, {
@@ -115,6 +93,26 @@ exports.getCommunityList = (req, res) => {
 				});
 		});
 	}
+
+	if (req.body.order[0].column === 0) {
+		if (req.body.order[0].dir === 'asc') getdata('communityname', 1);
+		else getdata('communityname', -1);
+	} else if (req.body.order[0].column === 1) {
+		if (req.body.order[0].dir === 'asc') getdata('communitymembershiprule', 1);
+		else getdata('communitymembershiprule', -1);
+	} else if (req.body.order[0].column === 2) {
+		if (req.body.order[0].dir === 'asc') getdata('communitylocation', 1);
+		else getdata('communitylocation', -1);
+	} else if (req.body.order[0].column === 3) {
+		if (req.body.order[0].dir === 'asc') getdata('communityowner', 1);
+		else getdata('communityowner', -1);
+	} else if (req.body.order[0].column === 4) {
+		if (req.body.order[0].dir === 'asc') getdata('communitycreatedate', 1);
+		else getdata('communitycreatedate', -1);
+	} else {
+		getdata('communityname', 1);
+	}
+
 };
 
 exports.uploadImage = (req, res) => {
@@ -482,7 +480,7 @@ exports.djoin = (req, res) => {
 	user.updateOne({ _id: req.session.data._id }, { $push: { join: req.body._id } }, (error, result) => {
 		if (error) throw error;
 		else {
-			community.updateOne({ _id: req.body._id }, { $push: { communitymember: req.session.data._id } }, (error, result) => {
+			community.updateOne({ _id: req.body._id }, { $push: { communitymember: req.session.data._id } }, (error) => {
 				if (error) throw error;
 				else {
 					req.session.data.join.push(req.body._id);

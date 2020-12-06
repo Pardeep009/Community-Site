@@ -36,6 +36,7 @@ router.get('/home', checkLogin, (req, res) => {
 	if (req.session.data.status === 'pending') {
 		res.render('updatefirst', { obj: req.session.data });
 	} else if (req.session.data.role === 'admin') {
+		console.log(req.session.data.switch);
 		if (req.session.data.switch === 'user') {
 			res.redirect('/community/communitypanel');
 		} else {
@@ -80,7 +81,7 @@ router.get('/viewprofile/:pro', checkLogin, (req, res) => {
 
 router.get('/changeswitch', checkLogin, logger2, (req, res) => {
 	req.session.data.switch = 'admin';
-	user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'admin' } }, (error, result) => {
+	user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'admin' } }, (error) => {
 		if (error) throw error;
 		else res.render('profile', { obj: req.session.data });
 	});
@@ -89,7 +90,7 @@ router.get('/changeswitch', checkLogin, logger2, (req, res) => {
 router.get('/switchcommunityhome', checkLogin, (req, res) => {
 	if (req.session.data.switch === 'admin') {
 		req.session.data.switch = 'user';
-		user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'user' } }, (error, result) => {
+		user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'user' } }, (error) => {
 			if (error) throw error;
 			else {
 				res.redirect('/community/communitypanel');
@@ -97,7 +98,7 @@ router.get('/switchcommunityhome', checkLogin, (req, res) => {
 		});
 	} else {
 		req.session.data.switch = 'admin';
-		user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'admin' } }, (error, result) => {
+		user.updateOne({ _id: req.session.data._id }, { $set: { switch: 'admin' } }, (error) => {
 			if (error) throw error;
 			else {
 				res.redirect('/home');
@@ -106,6 +107,175 @@ router.get('/switchcommunityhome', checkLogin, (req, res) => {
 	}
 });
 
+router.post('/login',
+	userController.login);
+
+router.post('/findEmail',
+	checkLogin,
+	userController.findEmail);
+
+router.post('/adduser',
+	checkLogin,
+	isAdmin,
+	userController.adduser);
+
+router.post('/changepassword',
+	checkLogin,
+	userController.changepassword);
+
+router.post('/sendmail',
+	checkLogin,
+	isAdmin, userController.sendmail);
+
+router.post('/ul',
+	checkLogin,
+	isAdmin, userController.getUsersList);
+
+router.post('/cl',
+	checkLogin,
+	isAdmin, communityController.getCommunityList);
+
+router.post('/tl',
+	checkLogin,
+	isAdmin, tagController.getTags);
+
+// router.post('/upload',
+// checkLogin,
+// userController.upload
+// );
+
+router.post('/upload',
+	checkLogin,
+	upload.single('myImage'),
+	userController.upload);
+
+router.post('/updateuser',
+	checkLogin,
+	userController.updateuser);
+
+router.post('/addtag',
+	checkLogin,
+	tagController.addtag);
+
+router.post('/deleteTag',
+	checkLogin,
+	isAdmin, tagController.deleteTag);
+
+router.post('/edituserinfo',
+	checkLogin,
+	userController.edituserinfo);
+
+router.post('/createcommunity',
+	checkLogin,
+	isAdmin, communityController.createcommunity);
+
+router.post('/ownedCommunities',
+	checkLogin,
+	communityController.ownedCommunities);
+
+router.post('/community/updateCommunity/:pro',
+	checkLogin,
+	isAdmin, communityController.updateCommunity);
+
+router.post('/community/uploadImage/:pro',
+	checkLogin,
+	isAdmin, upload.single('myImage'),
+	communityController.uploadImage);
+
+router.post('/freeCommunities',
+	checkLogin,
+	communityController.freeCommunities);
+
+router.post('/djoin',
+	checkLogin,
+	communityController.djoin);
+
+router.post('/pjoin',
+	checkLogin,
+	communityController.pjoin);
+
+router.post('/cancelRequest',
+	checkLogin,
+	communityController.cancelRequest);
+
+router.post('/leaveCommunity',
+	checkLogin,
+	communityController.leaveCommunity);
+
+router.post('/getMembers',
+	checkLogin,
+	communityController.getMembers);
+
+router.post('/acceptRequest',
+	checkLogin,
+	communityController.acceptRequest);
+
+router.post('/rejectRequest',
+	checkLogin,
+	communityController.rejectRequest);
+
+router.post('/removeUser',
+	checkLogin,
+	communityController.removeUser);
+
+router.post('/promoteUser',
+	checkLogin,
+	communityController.promteUser);
+
+router.post('/demoteUser',
+	checkLogin,
+	communityController.demoteUser);
+
+router.post('/get',
+	checkLogin,
+	communityController.get);
+
+router.post('/addReply',
+	checkLogin,
+	communityController.addReply);
+
+router.post('/deleteReply',
+	checkLogin,
+	communityController.deleteReply);
+
+router.post('/addComment',
+	checkLogin,
+	communityController.addComment);
+
+router.post('/deleteComment',
+	checkLogin,
+	communityController.deleteComment);
+
+router.post('/createDiscussion',
+	checkLogin,
+	communityController.createDiscussion);
+
+router.post('/getDiscussion',
+	checkLogin,
+	communityController.getDiscussion);
+
+router.post('/getDiscussionComments',
+	checkLogin,
+	communityController.getDiscussionComments);
+
+router.post('/featureDiscussion',
+	checkLogin,
+	communityController.featureDiscussion);
+
+router.post('/globalDiscussion',
+	checkLogin,
+	communityController.globalDiscussion);
+
+router.post('/deleteDiscussion',
+	checkLogin,
+	communityController.deleteDiscussion);
+
+router.post('/getObj',
+	checkLogin,
+	(req, res) => {
+		res.send(req.session.data);
+	});
+
 router.get('/logout', checkLogin, (req, res) => {
 	req.session.isLogin = 0;
 	req.session.destroy();
@@ -113,219 +283,8 @@ router.get('/logout', checkLogin, (req, res) => {
 	res.render('login');
 });
 
-router.post('/login',
-	userController.login
-);
-
-router.post('/findEmail',
-	checkLogin,
-	userController.findEmail
-);
-
-router.post('/adduser',
-	checkLogin,
-	isAdmin,
-	userController.adduser
-);
-
-router.post('/changepassword',
-	checkLogin,
-	userController.changepassword
-);
-
-router.post('/sendmail', 
-	checkLogin, 
-	isAdmin, userController.sendmail
-);
-
-router.post('/ul', 
-	checkLogin, 
-	isAdmin, userController.getUsersList
-);
-
-router.post('/cl', 
-	checkLogin, 
-	isAdmin, communityController.getCommunityList
-);
-
-router.post('/tl', 
-	checkLogin, 
-	isAdmin, tagController.getTags
-);
-
-// router.post('/upload',
-	// checkLogin,
-	// userController.upload
-// );
-
-router.post('/upload', 
-	checkLogin, 
-	upload.single('myImage'), 
-	userController.upload
-);
-
-router.post('/updateuser', 
-	checkLogin, 
-	userController.updateuser
-);
-
-router.post('/addtag', 
-	checkLogin, 
-	tagController.addtag
-);
-
-router.post('/deleteTag', 
-	checkLogin, 
-	isAdmin, tagController.deleteTag
-);
-
-router.post('/edituserinfo', 
-	checkLogin, 
-	userController.edituserinfo
-);
-
-router.post('/createcommunity', 
-	checkLogin, 
-	isAdmin, communityController.createcommunity
-);
-
-router.post('/ownedCommunities', 
-	checkLogin, 
-	communityController.ownedCommunities
-);
-
-router.post('/community/updateCommunity/:pro', 
-	checkLogin, 
-	isAdmin, communityController.updateCommunity
-);
-
-router.post('/community/uploadImage/:pro', 
-	checkLogin, 
-	isAdmin, upload.single('myImage'),
-	communityController.uploadImage
-);
-
-router.post('/freeCommunities', 
-	checkLogin, 
-	communityController.freeCommunities
-);
-
-router.post('/djoin', 
-	checkLogin, 
-	communityController.djoin
-);
-
-router.post('/pjoin', 
-	checkLogin, 
-	communityController.pjoin
-);
-
-router.post('/cancelRequest', 
-	checkLogin, 
-	communityController.cancelRequest
-);
-
-router.post('/leaveCommunity', 
-	checkLogin, 
-	communityController.leaveCommunity
-);
-
-router.post('/getMembers', 
-	checkLogin, 
-	communityController.getMembers
-);
-
-router.post('/acceptRequest', 
-	checkLogin, 
-	communityController.acceptRequest
-);
-
-router.post('/rejectRequest', 
-	checkLogin, 
-	communityController.rejectRequest
-);
-
-router.post('/removeUser', 
-	checkLogin, 
-	communityController.removeUser
-);
-
-router.post('/promoteUser', 
-	checkLogin, 
-	communityController.promteUser
-);
-
-router.post('/demoteUser', 
-	checkLogin, 
-	communityController.demoteUser
-);
-
-router.post('/get', 
-	checkLogin, 
-	communityController.get
-);
-
-router.post('/addReply', 
-	checkLogin, 
-	communityController.addReply
-);
-
-router.post('/deleteReply', 
-	checkLogin, 
-	communityController.deleteReply
-);
-
-router.post('/addComment', 
-	checkLogin, 
-	communityController.addComment
-);
-
-router.post('/deleteComment', 
-	checkLogin, 
-	communityController.deleteComment
-);
-
-router.post('/createDiscussion', 
-	checkLogin, 
-	communityController.createDiscussion
-);
-
-router.post('/getDiscussion', 
-	checkLogin, 
-	communityController.getDiscussion
-);
-
-router.post('/getDiscussionComments', 
-	checkLogin, 
-	communityController.getDiscussionComments
-);
-
-router.post('/featureDiscussion', 
-	checkLogin, 
-	communityController.featureDiscussion
-);
-
-router.post('/globalDiscussion', 
-	checkLogin, 
-	communityController.globalDiscussion
-);
-
-router.post('/deleteDiscussion', 
-	checkLogin, 
-	communityController.deleteDiscussion
-);
-
-router.post('/getObj', 
-	checkLogin, 
-	(req, res) => {
-	res.send(req.session.data
-	);
-});
-
-router.use('/', (req, res) => {
-	return res.status(404).json({
-		error: 'requested address was not found on server',
-	});
-})
+router.use('/', (req, res) => res.status(404).json({
+	error: 'requested address was not found on server',
+}));
 
 module.exports = router;

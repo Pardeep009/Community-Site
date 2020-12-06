@@ -20,21 +20,21 @@ const userSchema = new mongoose.Schema({
 	githubid: String,
 	switch: String,
 	req: [{
-		type: schema.Types.ObjectId, ref: 'community'
+		type: schema.Types.ObjectId, ref: 'community',
 	}], // array holding id's of communities which are requested by person to join
 	join: [{
-		type: schema.Types.ObjectId, ref: 'community'
+		type: schema.Types.ObjectId, ref: 'community',
 	}], // array holding id's of communities which are joined by person
 	owned: [{
-		type: schema.Types.ObjectId, ref: 'community'
+		type: schema.Types.ObjectId, ref: 'community',
 	}], // array holding id's of communities which are owned by person
 	manager: [{
-		type: schema.Types.ObjectId, ref: 'community'
+		type: schema.Types.ObjectId, ref: 'community',
 	}], // array holding id's of communities which are managed by person
 	invitations: [{
-		type: schema.Types.ObjectId, ref: 'community'
+		type: schema.Types.ObjectId, ref: 'community',
 	}], // array holding id's of communities which have invited the person to join
 });
 
-const user = mongoose.model('admin', userSchema);
+const user = mongoose.model('user', userSchema);
 module.exports = user;
