@@ -84,7 +84,7 @@ exports.sendmail = (req, res) => {
 };
 
 exports.changepassword = (req, res) => {
-	password = req.body;
+	const password = req.body;
 	if (password.old_password !== req.session.data.password) {
 		res.send('0'); // previous password dosen't match
 	} else {
