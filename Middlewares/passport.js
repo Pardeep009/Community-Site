@@ -42,7 +42,8 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 	})
 		.then((data) => {
 			if (data) {
-				console.log('-----------User Exists---------');
+				console.log('User Exists');
+				console.log(data);
 				req.session.isLogin = 1;
 				const obj = Object();
 				obj.isLogin = 1;
@@ -54,6 +55,7 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 				obj.state = data.state;
 				obj.githubid = data.githubid;
 				obj.photoname = data.photoname;
+				obj.switch = data.switch;
 				if (data.gender) {
 					obj.gender = data.gender;
 					obj.phone = data.phone;
@@ -74,9 +76,10 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 					githubid: req.session.passport.user._json.id,
 					photoname: '/dp.png',
 					state: 'active',
+					switch: 'user',
 				};
 				// eslint-disable-next-line no-unused-vars
-				User.create(obj, (error, result) => {
+				User.create(obj, (error) => {
 					if (error) throw error;
 					else {
 						req.session.data = obj;
@@ -86,6 +89,7 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 							.then((newlyCreatedUser) => {
 								req.session.data._id = newlyCreatedUser._id;
 								req.session.isLogin = 1;
+								console.log('redirecting to /home route');
 								res.redirect('/home');
 							})
 							.catch((err) => {
@@ -99,5 +103,9 @@ router.get('/github/callback', passport.authenticate('github', { failureRedirect
 			res.send(err);
 		});
 });
+
+router.use('/', (req, res) => res.status(404).json({
+	error: 'requested address was not found on server',
+}));
 
 module.exports = router;

@@ -4,21 +4,27 @@ const schema = mongoose.Schema;
 
 const communitydiscussion = new mongoose.Schema({
 	discussiondeleted: Boolean,
-	communityid: { type: schema.Types.ObjectId, ref: 'communitys' },
+	communityid: {
+		type: schema.Types.ObjectId, ref: 'community',
+	},
 	discussiontitle: String,
 	discussiondetail: String,
 	discussionownername: String,
-	discussionownerid: { type: schema.Types.ObjectId, ref: 'admins' },
+	discussionownerid: {
+		type: schema.Types.ObjectId, ref: 'user',
+	},
 	discussiondate: {
 		type: Date,
 		default: Date.now(),
 	},
 	discussiontags: String,
-	discussioncomments: [{ type: schema.Types.ObjectId, ref: 'comments' }],
+	discussioncomments: [{
+		type: schema.Types.ObjectId, ref: 'comment',
+	}],
 	commentslength: Number,
 	discussionfeatured: Boolean,
 	discussionglobal: Boolean,
 });
 
-const discussion = mongoose.model('discussions', communitydiscussion);
+const discussion = mongoose.model('discussion', communitydiscussion);
 module.exports = discussion;

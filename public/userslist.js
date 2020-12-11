@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 let table;
 function getdata() {
 	$.fn.dataTable.ext.errMode = 'none';
@@ -42,32 +43,25 @@ function getdata() {
 
 			render(data, type, row, meta) {
 				const r = row.role;
-				if (r == 'superadmin') data = `<center><i class="btn btn-primary btn-sm emailbtn actionbtns fa fa-envelope" data-toggle="modal" data-target="#sendmail" onclick=sendmail("${row._id}") style="background:#000; color:#fff;"></i></center>`;
-				else {
-					data = `<center><i class="btn btn-primary btn-sm emailbtn actionbtns fa fa-envelope" data-toggle="modal" data-target="#sendmail" onclick=sendmail("${row._id}") style="background:#000; color:#fff;"></i><i onclick=updateUser("${row._id}") class="btn btn-primary btn-sm editbtn actionbtns fa fa-edit" data-toggle="modal" data-target="#editModal" ></i>`;
-					if (row.state === 'active') data = `${data}<i class="btn btn-warning btn-sm activebtn actionbtns fa fa-times-circle" onclick=deactivate("${row._id}") ></i></center>`;
-					else data = `${data}<i class="btn btn-success btn-sm activebtn actionbtns fa fa-check-circle" onclick=activate("${row._id}") ></i></center>`;
-					// if(row.state==='active')
-					// data = data + '<i class="btn btn-warning btn-sm activebtn actionbtns fa fa-times-circle " data-toggle="modal" data-target="#activatemodal" onclick=deactivate("'+row._id+'","'+row.username+'",event) ></i></center>';
-					// else
-					// data = data + '<i class="btn btn-success btn-sm activebtn actionbtns fa fa-check-circle " data-toggle="modal" data-target="#activatemodal" onclick=activate("'+row._id+'","'+row.username+'",event) ></i></center>';
-				}
+				data = `<center><i class="btn btn-primary btn-sm emailbtn actionbtns fa fa-envelope" data-toggle="modal" data-target="#sendmail" onclick=sendmail("${row._id}") style="background:#000; color:#fff;"></i><i onclick=updateUser("${row._id}") class="btn btn-primary btn-sm editbtn actionbtns fa fa-edit" data-toggle="modal" data-target="#editModal" ></i>`;
+				if (row.state === 'active') data = `${data}<i class="btn btn-warning btn-sm activebtn actionbtns fa fa-times-circle" onclick=deactivate("${row._id}") ></i></center>`;
+				else data = `${data}<i class="btn btn-success btn-sm activebtn actionbtns fa fa-check-circle" onclick=activate("${row._id}") ></i></center>`;
 				return data;
 			},
 		}],
 	});
 
 	$('#role-select').on('change', () => {
-	    table.ajax.reload(null, false);
-  	});
+		table.ajax.reload(null, false);
+	});
 
-  	$('#status-select').on('change', () => {
-  	    table.ajax.reload(null, false);
-  	});
+	$('#status-select').on('change', () => {
+		table.ajax.reload(null, false);
+	});
 
-  	$('#refresh').on('click', () => {
-  	    table.ajax.reload(null, false);
-  	});
+	$('#refresh').on('click', () => {
+		table.ajax.reload(null, false);
+	});
 }
 
 $(document).ready(() => {
