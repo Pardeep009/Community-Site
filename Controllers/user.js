@@ -54,12 +54,11 @@ exports.adduser = (req, res) => {
 				from: req.session.data.username,
 				to: req.body.username,
 				subject: 'Welcome To CQ',
-				text: `Your Username is: ${req.body.username}\n` + ` Password is: ${req.body.password}`,
+				text: `Your Username is: ${req.body.username}\n Password is: ${req.body.password}`,
 			};
-			nodemailer.sendMail(mailOptions, (error, result) => {
-				if (error) throw error;
+			nodemailer.sendMail(mailOptions, (err) => {
+				if (err) throw err;
 				else {
-					console.log(result);
 					res.redirect('/home');
 				}
 			});
@@ -74,7 +73,7 @@ exports.sendmail = (req, res) => {
 		subject: req.body.subject,
 		html: req.body.text,
 	};
-	nodemailer.sendMail(mailOptions, (error, result) => {
+	nodemailer.sendMail(mailOptions, (error) => {
 		if (error) throw error;
 		else {
 			res.send('sent mail');
@@ -87,11 +86,12 @@ exports.changepassword = (req, res) => {
 	if (password.old_password !== req.session.data.password) {
 		res.send('0'); // previous password dosen't match
 	} else {
-		user.updateOne({ _id: req.session.data._id }, { $set: { password: password.new_password } }, (error, result) => {
-			if (error) throw error;
-			else req.session.data.password = password.new_password;
-			res.send('1');
-		});
+		user.updateOne({ _id: req.session.data._id },
+			{ $set: { password: password.new_password } }, (error) => {
+				if (error) throw error;
+				else req.session.data.password = password.new_password;
+				res.send('1');
+			});
 	}
 };
 
@@ -155,8 +155,7 @@ exports.getUsersList = (req, res) => {
 			user.find(findobj).countDocuments((e, coun) => {
 				getcount = coun;
 			}).catch((err) => {
-				console.error(err);
-				res.send(error);
+				res.send(err);
 			});
 
 			user.find(findobj).skip(start).limit(len).sort({ [colname]: sortorder })
@@ -181,19 +180,20 @@ exports.updateuser = (req, res) => {
 };
 
 exports.upload = (req, res) => {
-	user.updateOne({ _id: req.session.data._id }, { $set: { photoname: req.file.secure_url } }, (error, result) => {
-		if (error) {
-			throw error;
-		} else {
-			console.log(req.session.data);
-			req.session.data.photoname = req.file.secure_url;
-			if (req.session.data.status === 'pending') {
-				res.render('updatefirst', { obj: req.session.data });
+	user.updateOne({ _id: req.session.data._id },
+		{ $set: { photoname: req.file.secure_url } }, (error) => {
+			if (error) {
+				throw error;
 			} else {
-				res.render('editinfo', { obj: req.session.data });
+				console.log(req.session.data);
+				req.session.data.photoname = req.file.secure_url;
+				if (req.session.data.status === 'pending') {
+					res.render('updatefirst', { obj: req.session.data });
+				} else {
+					res.render('editinfo', { obj: req.session.data });
+				}
 			}
-		}
-	});
+		});
 };
 
 exports.edituserinfo = (req, res) => {
