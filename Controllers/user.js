@@ -77,8 +77,7 @@ exports.sendmail = (req, res) => {
 	nodemailer.sendMail(mailOptions, (error, result) => {
 		if (error) throw error;
 		else {
-			console.log(result);
-			res.end();
+			res.send('sent mail');
 		}
 	});
 };
