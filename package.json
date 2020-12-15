@@ -1,5 +1,5 @@
 {
-  "name": "sociallapp",
+  "name": "community-site",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -8,26 +8,25 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cloudinary": "^1.21.0",
-    "crypto": "^1.0.1",
-    "dotenv": "^8.2.0",
-    "ejs": "^3.1.2",
-    "express": "^4.17.1",
-    "express-session": "^1.16.2",
+    "cloudinary": "1.23.0",
+    "dotenv": "8.2.0",
+    "ejs": "3.1.2",
+    "express": "4.17.1",
+    "express-session": "1.16.2",
     "logger": "0.0.1",
-    "mongoose": "^5.9.14",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.2",
-    "multer-storage-cloudinary": "^2.2.1",
-    "nodemailer": "^6.2.1",
-    "passport": "^0.4.0",
-    "passport-github": "^1.1.0",
-    "path": "^0.12.7"
+    "mongoose": "5.9.14",
+    "morgan": "1.10.0",
+    "multer": "1.4.2",
+    "multer-storage-cloudinary": "2.2.1",
+    "nodemailer": "6.2.1",
+    "passport": "0.4.0",
+    "passport-github": "1.1.0",
+    "path": "0.12.7"
   },
   "devDependencies": {
-    "eslint": "^7.5.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0"
+    "eslint": "7.5.0",
+    "eslint-config-airbnb-base": "14.2.0",
+    "eslint-plugin-import": "2.22.0"
   },
   "description": ""
 }
