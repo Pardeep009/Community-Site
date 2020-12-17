@@ -14,7 +14,7 @@ router.use('/auth', isAlreadLoggedIn, require('./handlers/auth.js'));
 router.get('/restart-server', (req, res) => {
 	console.log(req.body);
 	const output = execSync('ls', { encoding: 'utf-8' });
-	res.json(req, res, output);
+	res.send(req, res, output);
 });
 
 router.use('/', checkLogin, require('./handlers/user.js'));
