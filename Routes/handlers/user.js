@@ -131,7 +131,8 @@ router.post('/community/updateCommunity/:pro',
 	isAdmin, communityController.updateCommunity);
 
 router.post('/community/uploadImage/:pro',
-	isAdmin, upload.single('myImage'),
+	isAdmin,
+	upload.single('myImage'),
 	communityController.uploadImage);
 
 router.post('/freeCommunities',
@@ -209,7 +210,7 @@ router.get('/logout', (req, res) => {
 	req.session.isLogin = 0;
 	req.session.destroy();
 	res.header('Cache-Control', 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0');
-	res.render('login');
+	res.redirect('/auth/login');
 });
 
 router.use('/', (req, res) => res.status(404).json({
